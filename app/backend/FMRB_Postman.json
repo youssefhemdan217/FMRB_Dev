@@ -1,0 +1,725 @@
+{
+  "info": {
+    "name": "FMRB Backend API - Complete",
+    "description": "Meeting Room Booking System API with auto-authentication and dynamic variables",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1",
+      "type": "default"
+    },
+    {
+      "key": "serverUrl",
+      "value": "http://localhost:3000",
+      "type": "default"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "roomId",
+      "value": "1",
+      "type": "default"
+    },
+    {
+      "key": "bookingId",
+      "value": "1",
+      "type": "default"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{serverUrl}}/health",
+          "host": ["{{serverUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if server is running"
+      },
+      "response": []
+    },
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.refreshToken);",
+                  "    pm.collectionVariables.set('userId', response.user.id);",
+                  "    console.log('✅ User registered! Token saved automatically.');",
+                  "    console.log('User ID:', response.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Demo User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register new user. Token automatically saved to collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', response.refreshToken);",
+                  "    pm.collectionVariables.set('userId', response.user.id);",
+                  "    console.log('✅ Login successful! Token saved.');",
+                  "    console.log('User:', response.user.name, '(' + response.user.role + ')');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with credentials. Token automatically saved."
+          },
+          "response": []
+        }
+      ],
+      "description": "User registration and login. Tokens are auto-saved after login!"
+    },
+    {
+      "name": "🏢 Rooms",
+      "item": [
+        {
+          "name": "Get All Rooms (with status)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms"]
+            },
+            "description": "Get all rooms with real-time status calculation (available/busy/unavailable)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "{{roomId}}"]
+            },
+            "description": "Get single room with status"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Room",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('roomId', response.id);",
+                  "    console.log('✅ Room created! ID:', response.id);",
+                  "    console.log('Room:', response.name, '- Capacity:', response.capacity);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Conference Room A\",\n  \"location\": \"Building A, Floor 1\",\n  \"capacity\": 10,\n  \"isActive\": true,\n  \"workHours\": {\n    \"start\": \"08:00\",\n    \"end\": \"20:00\"\n  },\n  \"amenities\": [\"Projector\", \"Whiteboard\", \"Video Conference\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms"]
+            },
+            "description": "Create new room. Room ID auto-saved to {{roomId}} variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Room",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacity\": 12,\n  \"amenities\": [\"Projector\", \"Whiteboard\", \"Video Conference\", \"Phone\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "{{roomId}}"]
+            },
+            "description": "Update room. Uses {{roomId}} from last created room."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Room",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/{{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["rooms", "{{roomId}}"]
+            },
+            "description": "Delete room (also deletes its bookings)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Room management with real-time status"
+    },
+    {
+      "name": "📅 Bookings",
+      "item": [
+        {
+          "name": "Get All Bookings",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "description": "Get all bookings"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookings by Room",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings?roomId={{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"],
+              "query": [
+                {
+                  "key": "roomId",
+                  "value": "{{roomId}}",
+                  "description": "Filter by room ID"
+                }
+              ]
+            },
+            "description": "Get all bookings for specific room"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{bookingId}}"]
+            },
+            "description": "Get single booking"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('bookingId', response.id);",
+                  "    console.log('✅ Booking created! ID:', response.id);",
+                  "    console.log('Meeting:', response.title);",
+                  "    console.log('Time:', response.start, '-', response.end);",
+                  "} else if (pm.response.code === 409) {",
+                  "    console.log('❌ Conflict: Time slot already booked');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"title\": \"Team Standup\",\n  \"organizer\": \"John Doe\",\n  \"start\": \"2024-10-15T09:00:00Z\",\n  \"end\": \"2024-10-15T09:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "description": "Create booking. Automatically checks for overlaps!"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Meeting Title\",\n  \"start\": \"2024-10-15T10:00:00Z\",\n  \"end\": \"2024-10-15T11:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{bookingId}}"]
+            },
+            "description": "Update booking"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", "{{bookingId}}"]
+            },
+            "description": "Delete booking"
+          },
+          "response": []
+        },
+        {
+          "name": "Test Overlap Detection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 409) {",
+                  "    console.log('✅ Overlap detection working! Got 409 Conflict as expected.');",
+                  "} else if (pm.response.code === 201) {",
+                  "    console.log('⚠️ No overlap - booking created. Try again with overlapping time.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"title\": \"Overlapping Meeting (Should Fail)\",\n  \"organizer\": \"Test User\",\n  \"start\": \"2024-10-15T09:00:00Z\",\n  \"end\": \"2024-10-15T09:15:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "description": "Test overlap detection. Should return 409 if previous booking exists."
+          },
+          "response": []
+        }
+      ],
+      "description": "Booking management endpoints"
+    },
+    {
+      "name": "📊 Analytics",
+      "item": [
+        {
+          "name": "Get Analytics Summary",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/summary?startDate=2024-10-06&endDate=2024-10-12",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "summary"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-10-06",
+                  "description": "Start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-10-12",
+                  "description": "End date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "roomId",
+                  "value": "{{roomId}}",
+                  "description": "Optional: Filter by room",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get analytics: utilization, available rooms, peak hour, avg duration, top room"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Analytics for Specific Room",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/summary?startDate=2024-10-06&endDate=2024-10-12&roomId={{roomId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "summary"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-10-06"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-10-12"
+                },
+                {
+                  "key": "roomId",
+                  "value": "{{roomId}}"
+                }
+              ]
+            },
+            "description": "Get analytics for a specific room"
+          },
+          "response": []
+        }
+      ],
+      "description": "Analytics and statistics"
+    },
+    {
+      "name": "🧪 Testing Scenarios",
+      "item": [
+        {
+          "name": "Complete Workflow",
+          "item": [
+            {
+              "name": "1. Register User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const response = pm.response.json();",
+                      "    pm.collectionVariables.set('accessToken', response.accessToken);",
+                      "    pm.collectionVariables.set('userId', response.user.id);",
+                      "    console.log('Step 1 ✅ User registered');",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"test{{$timestamp}}@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Test User\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                }
+              }
+            },
+            {
+              "name": "2. Create Room",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const response = pm.response.json();",
+                      "    pm.collectionVariables.set('roomId', response.id);",
+                      "    console.log('Step 2 ✅ Room created');",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test Room\",\n  \"location\": \"Building B, Floor 2\",\n  \"capacity\": 8,\n  \"isActive\": true,\n  \"workHours\": {\n    \"start\": \"09:00\",\n    \"end\": \"17:00\"\n  },\n  \"amenities\": [\"Whiteboard\"]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/rooms",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["rooms"]
+                }
+              }
+            },
+            {
+              "name": "3. Create Booking",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 201) {",
+                      "    const response = pm.response.json();",
+                      "    pm.collectionVariables.set('bookingId', response.id);",
+                      "    console.log('Step 3 ✅ Booking created');",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"title\": \"Test Meeting\",\n  \"organizer\": \"Test User\",\n  \"start\": \"2024-10-15T14:00:00Z\",\n  \"end\": \"2024-10-15T15:00:00Z\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/bookings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["bookings"]
+                }
+              }
+            },
+            {
+              "name": "4. Get Room Status",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const rooms = pm.response.json();",
+                      "    const myRoom = rooms.find(r => r.id === pm.collectionVariables.get('roomId'));",
+                      "    if (myRoom) {",
+                      "        console.log('Step 4 ✅ Room status:', myRoom.status);",
+                      "        console.log('Message:', myRoom.statusMessage);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/rooms",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["rooms"]
+                }
+              }
+            },
+            {
+              "name": "5. Get Analytics",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const response = pm.response.json();",
+                      "    console.log('Step 5 ✅ Analytics retrieved');",
+                      "    console.log('Utilization:', response.utilization + '%');",
+                      "    console.log('Available Rooms:', response.availableRooms);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/analytics/summary",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["analytics", "summary"]
+                }
+              }
+            }
+          ],
+          "description": "Run all requests in order to test complete workflow"
+        }
+      ]
+    }
+  ]
+}
+

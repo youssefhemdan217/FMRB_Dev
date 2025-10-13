@@ -1,0 +1,29 @@
+{
+  "name": "fmrb-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FMRB (Facility/Meeting Room Booking) - Monorepo containing frontend and backend applications",
+  "workspaces": [
+    "app/frontend",
+    "app/backend"
+  ],
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:frontend": "npm run dev --workspace=@fmrb/frontend",
+    "dev:backend": "npm run dev --workspace=@fmrb/backend",
+    "build": "npm run build --workspaces",
+    "build:frontend": "npm run build --workspace=@fmrb/frontend",
+    "build:backend": "npm run build --workspace=@fmrb/backend",
+    "install:all": "npm install",
+    "clean": "npm run clean --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

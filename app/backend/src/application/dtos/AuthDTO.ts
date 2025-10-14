@@ -20,7 +20,3 @@ export interface AuthResponseDTO {
   refreshToken: string;
 }
 
-export interface RefreshTokenDTO {
-  refreshToken: string;
-}
-

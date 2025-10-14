@@ -10,7 +10,11 @@ import { RoomDetailPage } from './pages/RoomDetailPage';
 import { RoomManagementPage } from './pages/RoomManagementPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import { BookingModal } from './components/modals/BookingModal';
+import { Toast } from './components/common/Toast';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
 function AppContent() {
@@ -25,7 +29,19 @@ function AppContent() {
       }}
     >
       <Routes>
-        <Route path="/" element={<AppLayout />}>
+        {/* Auth Routes (Public) */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* App Routes (Protected) */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="/rooms" replace />} />
           <Route path="rooms" element={<RoomsPage />} />
           <Route path="rooms/:id" element={<RoomDetailPage />} />
@@ -34,7 +50,10 @@ function AppContent() {
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
+      
+      {/* Global Components */}
       <BookingModal />
+      <Toast />
     </BrowserRouter>
   );
 }

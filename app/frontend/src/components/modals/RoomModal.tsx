@@ -2,7 +2,7 @@ import { Modal } from '../common/Modal';
 import { RoomForm } from '../forms/RoomForm';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { closeRoomModal, showToast } from '../../store/slices/uiSlice';
-import { addRoom, updateRoom } from '../../store/slices/roomsSlice';
+import { createRoom, updateRoom } from '../../store/slices/roomsSlice';
 import { selectRoomById } from '../../store/selectors/roomSelectors';
 import { validateRoom } from '../../utils/validators';
 import { useState, useMemo } from 'react';
@@ -10,6 +10,7 @@ import { useState, useMemo } from 'react';
 export const RoomModal = () => {
   const dispatch = useAppDispatch();
   const { open, roomId } = useAppSelector((state) => state.ui.roomModal);
+  const { loading } = useAppSelector((state) => state.rooms);
   
   // Memoize the selector to avoid creating a new one on each render
   const roomSelector = useMemo(
@@ -21,7 +22,7 @@ export const RoomModal = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     name: string;
     location: string;
     capacity: number;
@@ -37,36 +38,49 @@ export const RoomModal = () => {
       return;
     }
 
-    if (roomId && room) {
-      // Update existing room
-      dispatch(
-        updateRoom({
-          ...room,
-          ...data,
-        })
-      );
-      dispatch(
-        showToast({
-          message: 'Room updated successfully',
+    try {
+      if (roomId && room) {
+        // Update existing room
+        await dispatch(updateRoom({
+          id: roomId,
+          data: {
+            name: data.name,
+            location: data.location,
+            capacity: data.capacity,
+            isActive: data.isActive,
+            workHours: data.workHours,
+            amenities: data.amenities,
+          },
+        })).unwrap();
+        
+        dispatch(showToast({
+          message: `Room "${data.name}" updated successfully`,
           type: 'success',
-        })
-      );
-    } else {
-      // Create new room
-      const newRoom = {
-        id: `room-${Date.now()}`,
-        ...data,
-      };
-      dispatch(addRoom(newRoom));
-      dispatch(
-        showToast({
-          message: 'Room created successfully',
+        }));
+      } else {
+        // Create new room
+        await dispatch(createRoom({
+          name: data.name,
+          location: data.location,
+          capacity: data.capacity,
+          isActive: data.isActive,
+          workHours: data.workHours,
+          amenities: data.amenities,
+        })).unwrap();
+        
+        dispatch(showToast({
+          message: `Room "${data.name}" created successfully`,
           type: 'success',
-        })
-      );
-    }
+        }));
+      }
 
-    handleClose();
+      handleClose();
+    } catch (error) {
+      dispatch(showToast({
+        message: error as string || 'Failed to save room',
+        type: 'error',
+      }));
+    }
   };
 
   const handleClose = () => {
@@ -76,7 +90,13 @@ export const RoomModal = () => {
 
   return (
     <Modal open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <RoomForm room={room} onSubmit={handleSubmit} onCancel={handleClose} errors={errors} />
+      <RoomForm 
+        room={room} 
+        onSubmit={handleSubmit} 
+        onCancel={handleClose} 
+        errors={errors}
+        loading={loading}
+      />
     </Modal>
   );
 };

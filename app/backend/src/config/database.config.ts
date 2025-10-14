@@ -10,6 +10,8 @@ export const databaseConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  // Important: Return JSON columns as JavaScript objects, not strings
+  jsonStrings: false,
 };
 
 let pool: mysql.Pool;

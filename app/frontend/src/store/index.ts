@@ -3,6 +3,7 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import roomsReducer from './slices/roomsSlice';
 import bookingsReducer from './slices/bookingsSlice';
 import uiReducer from './slices/uiSlice';
+import authReducer from './slices/authSlice';
 
 /**
  * LocalStorage middleware to persist bookings
@@ -43,6 +44,7 @@ const localStorageMiddleware: Middleware = (store) => (next) => (action) => {
  */
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     rooms: roomsReducer,
     bookings: bookingsReducer,
     ui: uiReducer,

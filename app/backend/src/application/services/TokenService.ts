@@ -10,18 +10,18 @@ export interface TokenPayload {
 
 export class TokenService {
   generateAccessToken(payload: TokenPayload): string {
+    // Token without expiration for simplified authentication
     return jwt.sign(
       payload,
-      jwtConfig.access.secret,
-      { expiresIn: jwtConfig.access.expiresIn } as jwt.SignOptions
+      jwtConfig.access.secret
     );
   }
 
   generateRefreshToken(payload: TokenPayload): string {
+    // Token without expiration for simplified authentication
     return jwt.sign(
       payload,
-      jwtConfig.refresh.secret,
-      { expiresIn: jwtConfig.refresh.expiresIn } as jwt.SignOptions
+      jwtConfig.refresh.secret
     );
   }
 

@@ -1,24 +1,44 @@
-import { Container, Typography, Box, Paper, alpha } from '@mui/material';
+import { Container, Typography, Box, Paper, alpha, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../store';
+import { useAppSelector, useAppDispatch } from '../store';
 import { selectAllRooms, selectAllBookings } from '../store/selectors/roomSelectors';
 import { RoomFilters } from '../components/rooms/RoomFilters';
 import { RoomGrid } from '../components/rooms/RoomGrid';
 import { useRoomFilters } from '../hooks/useFilters';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { RoomStatus } from '../types/room.types';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import { calculateRoomStatus } from '../utils/dateUtils';
+import { fetchRooms } from '../store/slices/roomsSlice';
+import { showToast } from '../store/slices/uiSlice';
 
 export const RoomsPage = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const rooms = useAppSelector(selectAllRooms);
   const bookings = useAppSelector(selectAllBookings);
+  const { loading } = useAppSelector((state) => state.rooms);
   const { activeFilter, searchQuery, setActiveFilter, setSearchQuery, filterRooms } =
     useRoomFilters();
+
+  // Fetch rooms on component mount
+  useEffect(() => {
+    const loadRooms = async () => {
+      const result = await dispatch(fetchRooms());
+      
+      if (fetchRooms.rejected.match(result)) {
+        dispatch(showToast({
+          message: result.payload || 'Failed to load rooms',
+          type: 'error',
+        }));
+      }
+    };
+
+    loadRooms();
+  }, [dispatch]);
 
   // Calculate statuses for all rooms
   const roomStatuses = useMemo(() => {
@@ -50,6 +70,20 @@ export const RoomsPage = () => {
   const handleRoomClick = (roomId: string) => {
     navigate(`/rooms/${roomId}`);
   };
+
+  // Show loading state
+  if (loading && rooms.length === 0) {
+    return (
+      <Container maxWidth="xl" sx={{ py: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress size={60} />
+          <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>
+            Loading rooms...
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>

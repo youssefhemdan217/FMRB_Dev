@@ -25,9 +25,10 @@ export interface RoomFormProps {
   }) => void;
   onCancel: () => void;
   errors?: Record<string, string>;
+  loading?: boolean;
 }
 
-export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProps) => {
+export const RoomForm = ({ room, onSubmit, onCancel, errors = {}, loading = false }: RoomFormProps) => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [capacity, setCapacity] = useState(4);
@@ -106,6 +107,7 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
           onChange={(e) => setName(e.target.value)}
           error={!!errors.name}
           helperText={errors.name}
+          disabled={loading}
           sx={{ mb: 2 }}
         />
 
@@ -119,6 +121,7 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
           onChange={(e) => setLocation(e.target.value)}
           error={!!errors.location}
           helperText={errors.location}
+          disabled={loading}
           sx={{ mb: 2 }}
         />
 
@@ -133,6 +136,7 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
           error={!!errors.capacity}
           helperText={errors.capacity}
           inputProps={{ min: 1, max: 1000 }}
+          disabled={loading}
           sx={{ mb: 2 }}
         />
 
@@ -148,6 +152,7 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
             error={!!errors.workHoursStart}
             helperText={errors.workHoursStart}
             InputLabelProps={{ shrink: true }}
+            disabled={loading}
           />
 
           <TextField
@@ -161,6 +166,7 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
             error={!!errors.workHoursEnd}
             helperText={errors.workHoursEnd}
             InputLabelProps={{ shrink: true }}
+            disabled={loading}
           />
         </Box>
 
@@ -169,6 +175,7 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
             <Switch
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
+              disabled={loading}
             />
           }
           label="Room is active"
@@ -185,6 +192,7 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
             onChange={(e) => setNewAmenity(e.target.value)}
             onKeyPress={handleKeyPress}
             helperText="Press Enter to add"
+            disabled={loading}
           />
 
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
@@ -192,9 +200,10 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
               <Chip
                 key={amenity}
                 label={amenity}
-                onDelete={() => handleDeleteAmenity(amenity)}
+                onDelete={loading ? undefined : () => handleDeleteAmenity(amenity)}
                 color="primary"
                 variant="outlined"
+                disabled={loading}
               />
             ))}
           </Box>
@@ -202,9 +211,11 @@ export const RoomForm = ({ room, onSubmit, onCancel, errors = {} }: RoomFormProp
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
-        <Button type="submit" variant="contained">
-          {room ? 'Update' : 'Create'}
+        <Button onClick={onCancel} disabled={loading}>
+          Cancel
+        </Button>
+        <Button type="submit" variant="contained" disabled={loading}>
+          {loading ? 'Saving...' : (room ? 'Update' : 'Create')}
         </Button>
       </DialogActions>
     </Box>

@@ -160,6 +160,78 @@
             "description": "Login with credentials. Token automatically saved."
           },
           "response": []
+        },
+        {
+          "name": "Logout User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('accessToken', '');",
+                  "    pm.collectionVariables.set('refreshToken', '');",
+                  "    console.log('✅ Logged out successfully. Tokens cleared.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout user. Requires authentication. Tokens will be cleared."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Role (Make Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('✅ User role updated!');",
+                  "    console.log('User:', response.user.name);",
+                  "    console.log('New Role:', response.user.role);",
+                  "    console.log('⚠️ Remember: Logout and login again to get new token with admin role!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/users/{{userId}}/role",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "users", "{{userId}}", "role"]
+            },
+            "description": "Update user role to admin. Uses {{userId}} from login/register. IMPORTANT: Logout and login again after this!"
+          },
+          "response": []
         }
       ],
       "description": "User registration and login. Tokens are auto-saved after login!"

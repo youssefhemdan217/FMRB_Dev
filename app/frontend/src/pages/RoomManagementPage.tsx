@@ -11,11 +11,6 @@ import {
   TableRow,
   Paper,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
   Chip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -25,16 +20,23 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useAppSelector, useAppDispatch } from '../store';
 import { selectAllRooms } from '../store/selectors/roomSelectors';
-import { deleteRoom } from '../store/slices/roomsSlice';
+import { deleteRoom, fetchRooms } from '../store/slices/roomsSlice';
 import { openRoomModal, showToast } from '../store/slices/uiSlice';
 import { RoomModal } from '../components/modals/RoomModal';
-import { useState } from 'react';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
+import { useState, useEffect } from 'react';
 
 export const RoomManagementPage = () => {
   const dispatch = useAppDispatch();
   const rooms = useAppSelector(selectAllRooms);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [roomToDelete, setRoomToDelete] = useState<string | null>(null);
+  const [roomToDelete, setRoomToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // Fetch rooms on component mount
+  useEffect(() => {
+    dispatch(fetchRooms());
+  }, [dispatch]);
 
   const handleAddRoom = () => {
     dispatch(openRoomModal({}));
@@ -44,23 +46,33 @@ export const RoomManagementPage = () => {
     dispatch(openRoomModal({ roomId }));
   };
 
-  const handleDeleteClick = (roomId: string) => {
-    setRoomToDelete(roomId);
+  const handleDeleteClick = (roomId: string, roomName: string) => {
+    setRoomToDelete({ id: roomId, name: roomName });
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (roomToDelete) {
-      dispatch(deleteRoom(roomToDelete));
-      dispatch(
-        showToast({
-          message: 'Room deleted successfully',
+      try {
+        setDeleting(true);
+        await dispatch(deleteRoom(roomToDelete.id)).unwrap();
+        
+        dispatch(showToast({
+          message: `Room "${roomToDelete.name}" deleted successfully`,
           type: 'success',
-        })
-      );
+        }));
+        
+        setDeleteDialogOpen(false);
+        setRoomToDelete(null);
+      } catch (error) {
+        dispatch(showToast({
+          message: error as string || 'Failed to delete room',
+          type: 'error',
+        }));
+      } finally {
+        setDeleting(false);
+      }
     }
-    setDeleteDialogOpen(false);
-    setRoomToDelete(null);
   };
 
   return (
@@ -156,7 +168,7 @@ export const RoomManagementPage = () => {
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() => handleDeleteClick(room.id)}
+                      onClick={() => handleDeleteClick(room.id, room.name)}
                       sx={{
                         backgroundColor: 'rgba(239, 68, 68, 0.08)',
                         '&:hover': {
@@ -254,7 +266,7 @@ export const RoomManagementPage = () => {
                 size="small"
                 color="error"
                 startIcon={<DeleteIcon />}
-                onClick={() => handleDeleteClick(room.id)}
+                onClick={() => handleDeleteClick(room.id, room.name)}
                 fullWidth
                 sx={{
                   borderWidth: 2,
@@ -288,21 +300,24 @@ export const RoomManagementPage = () => {
       <RoomModal />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this room? All associated bookings will remain
-            but won&apos;t be visible. This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        title="Delete Room"
+        message={
+          roomToDelete 
+            ? `Are you sure you want to delete "${roomToDelete.name}"? This action cannot be undone.`
+            : 'Are you sure you want to delete this room?'
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="error"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setDeleteDialogOpen(false);
+          setRoomToDelete(null);
+        }}
+        loading={deleting}
+      />
     </Container>
   );
 };

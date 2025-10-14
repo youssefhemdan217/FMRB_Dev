@@ -93,6 +93,10 @@ export class MySQLRoomRepository implements IRoomRepository {
   }
 
   private mapRowToRoom(row: RowDataPacket): Room {
+    // With jsonStrings: false, MySQL returns JSON columns as JavaScript objects
+    // Amenities will be an array or null
+    const amenities: string[] = Array.isArray(row.amenities) ? row.amenities : [];
+
     return {
       id: row.id.toString(),
       name: row.name,
@@ -103,7 +107,7 @@ export class MySQLRoomRepository implements IRoomRepository {
         start: row.work_hours_start.slice(0, 5),
         end: row.work_hours_end.slice(0, 5),
       },
-      amenities: row.amenities ? JSON.parse(row.amenities) : [],
+      amenities,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     };

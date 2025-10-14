@@ -20,6 +20,7 @@ import { RoomStatusService } from './application/services/RoomStatusService';
 // Use Cases
 import { RegisterUserUseCase } from './application/use-cases/auth/RegisterUser';
 import { LoginUserUseCase } from './application/use-cases/auth/LoginUser';
+import { UpdateUserRoleUseCase } from './application/use-cases/auth/UpdateUserRole';
 import { CreateRoomUseCase } from './application/use-cases/rooms/CreateRoom';
 import { GetAllRoomsUseCase } from './application/use-cases/rooms/GetAllRooms';
 import { CreateBookingUseCase } from './application/use-cases/bookings/CreateBooking';
@@ -63,6 +64,9 @@ class DIContainer {
     this.hashService,
     this.tokenService
   );
+  public readonly updateUserRoleUseCase = new UpdateUserRoleUseCase(
+    this.userRepository
+  );
   public readonly createRoomUseCase = new CreateRoomUseCase(this.roomRepository);
   public readonly getAllRoomsUseCase = new GetAllRoomsUseCase(this.roomRepository);
   public readonly createBookingUseCase = new CreateBookingUseCase(
@@ -78,7 +82,8 @@ class DIContainer {
   // Controllers
   public readonly authController = new AuthController(
     this.registerUserUseCase,
-    this.loginUserUseCase
+    this.loginUserUseCase,
+    this.updateUserRoleUseCase
   );
   public readonly roomController = new RoomController(
     this.createRoomUseCase,
@@ -130,7 +135,7 @@ const createApp = (container: DIContainer): Application => {
 
   // API Routes
   const apiPrefix = serverConfig.apiPrefix;
-  app.use(`${apiPrefix}/auth`, createAuthRoutes(container.authController));
+  app.use(`${apiPrefix}/auth`, createAuthRoutes(container.authController, container.tokenService));
   app.use(`${apiPrefix}/rooms`, createRoomRoutes(container.roomController, container.tokenService));
   app.use(`${apiPrefix}/bookings`, createBookingRoutes(container.bookingController, container.tokenService));
   app.use(`${apiPrefix}/analytics`, createAnalyticsRoutes(container.analyticsController));

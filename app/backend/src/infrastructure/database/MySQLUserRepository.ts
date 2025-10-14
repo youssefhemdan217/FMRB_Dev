@@ -75,6 +75,16 @@ export class MySQLUserRepository implements IUserRepository {
     return user!;
   }
 
+  async updateRole(id: string, role: UserRole): Promise<User> {
+    await this.pool.execute(
+      `UPDATE users SET role = ?, updated_at = NOW() WHERE id = ?`,
+      [role, id]
+    );
+
+    const user = await this.findById(id);
+    return user!;
+  }
+
   async delete(id: string): Promise<void> {
     await this.pool.execute(`DELETE FROM users WHERE id = ?`, [id]);
   }

@@ -1,31 +1,33 @@
 import { useEffect } from 'react';
 import { useAppDispatch } from '../store';
-import { setBookings } from '../store/slices/bookingsSlice';
-import { Booking } from '../types/booking.types';
+import { fetchAllBookings } from '../store/slices/bookingsSlice';
+import { useLocation } from 'react-router-dom';
 
 /**
- * Custom hook to handle localStorage persistence for bookings
- * Note: Rooms are now fetched from the backend API, not localStorage
+ * Custom hook to handle data initialization
+ * Fetches bookings from the backend API only when needed
+ * Note: Must be used inside Router context
  */
 export const useLocalStorage = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   useEffect(() => {
-    // Load bookings from localStorage (until Phase 3 integration)
-    const loadData = () => {
-      try {
-        const storedBookings = localStorage.getItem('bookings');
-
-        if (storedBookings) {
-          const bookings: Booking[] = JSON.parse(storedBookings);
-          dispatch(setBookings(bookings));
+    // Only fetch all bookings on pages that need all bookings data
+    // Individual room pages will fetch their own bookings
+    const needsAllBookings = location.pathname === '/rooms' || location.pathname === '/';
+    
+    if (needsAllBookings) {
+      const loadData = async () => {
+        try {
+          await dispatch(fetchAllBookings());
+        } catch (error) {
+          console.error('Error loading bookings from API:', error);
         }
-      } catch (error) {
-        console.error('Error loading bookings from localStorage:', error);
-      }
-    };
+      };
 
-    loadData();
-  }, [dispatch]);
+      loadData();
+    }
+  }, [dispatch, location.pathname]);
 };
 

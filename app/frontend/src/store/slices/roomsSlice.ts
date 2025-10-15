@@ -142,6 +142,17 @@ const roomsSlice = createSlice({
     builder.addCase(fetchRoomById.fulfilled, (state, action) => {
       state.loading = false;
       state.selectedRoom = action.payload;
+      
+      // Also add/update the room in the rooms array so selectors can find it
+      const existingIndex = state.rooms.findIndex(room => room.id === action.payload.id);
+      if (existingIndex >= 0) {
+        // Update existing room
+        state.rooms[existingIndex] = action.payload;
+      } else {
+        // Add new room to array
+        state.rooms.push(action.payload);
+      }
+      
       state.error = null;
     });
     builder.addCase(fetchRoomById.rejected, (state, action) => {

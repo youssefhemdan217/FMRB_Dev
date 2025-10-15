@@ -2,16 +2,17 @@ import { Modal } from '../common/Modal';
 import { BookingForm } from '../forms/BookingForm';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { closeBookingModal, showToast } from '../../store/slices/uiSlice';
-import { addBooking, updateBooking, deleteBooking } from '../../store/slices/bookingsSlice';
+import { createBookingAsync, deleteBookingAsync } from '../../store/slices/bookingsSlice';
 import { selectBookingsByRoomId } from '../../store/selectors/roomSelectors';
 import { validateBooking } from '../../utils/validators';
 import { BookingValidationErrors } from '../../types/booking.types';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 
 export const BookingModal = () => {
   const dispatch = useAppDispatch();
   const { open, booking, roomId, mode } = useAppSelector((state) => state.ui.bookingModal);
+  const { loading } = useAppSelector((state) => state.bookings);
   
   // Memoize the selector to avoid creating a new one on each render
   const bookingsByRoomIdSelector = useMemo(
@@ -25,8 +26,44 @@ export const BookingModal = () => {
 
   const [errors, setErrors] = useState<BookingValidationErrors>({});
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [defaultTimes, setDefaultTimes] = useState<{ start?: Date; end?: Date }>({});
 
-  const handleSubmit = (data: {
+  // Handle sessionStorage for selected time slot
+  useEffect(() => {
+    if (open && mode === 'create') {
+      try {
+        const selectedSlot = sessionStorage.getItem('selectedSlot');
+        if (selectedSlot) {
+          const { start, end } = JSON.parse(selectedSlot);
+          setDefaultTimes({
+            start: new Date(start),
+            end: new Date(end),
+          });
+          // Clear the session storage after using it
+          sessionStorage.removeItem('selectedSlot');
+        } else {
+          // Set default times to current time + 1 hour
+          const now = new Date();
+          const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
+          setDefaultTimes({
+            start: now,
+            end: nextHour,
+          });
+        }
+      } catch (error) {
+        console.error('Error reading selected slot from sessionStorage:', error);
+        // Set default times to current time + 1 hour as fallback
+        const now = new Date();
+        const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
+        setDefaultTimes({
+          start: now,
+          end: nextHour,
+        });
+      }
+    }
+  }, [open, mode]);
+
+  const handleSubmit = async (data: {
     title: string;
     organizer?: string;
     start: string;
@@ -49,55 +86,95 @@ export const BookingModal = () => {
     }
 
     if (mode === 'edit' && booking) {
-      // Update existing booking
-      dispatch(
-        updateBooking({
-          ...booking,
-          ...data,
-        })
-      );
+      // Edit mode is not supported by the backend API
       dispatch(
         showToast({
-          message: 'Booking updated successfully',
-          type: 'success',
+          message: 'Editing bookings is not supported yet. Please delete and create a new booking.',
+          type: 'warning',
         })
       );
-    } else {
-      // Create new booking
-      const newBooking = {
-        id: `booking-${Date.now()}`,
+      return;
+    }
+
+    // Create new booking
+    try {
+      const bookingData = {
         roomId,
-        ...data,
-        createdAt: new Date().toISOString(),
+        title: data.title,
+        organizer: data.organizer,
+        start: data.start,
+        end: data.end,
       };
-      dispatch(addBooking(newBooking));
+
+      const result = await dispatch(createBookingAsync(bookingData));
+      
+      if (createBookingAsync.fulfilled.match(result)) {
+        dispatch(
+          showToast({
+            message: 'Booking created successfully',
+            type: 'success',
+          })
+        );
+        handleClose();
+      } else {
+        // Handle error
+        const errorMessage = result.payload as string || 'Failed to create booking';
+        dispatch(
+          showToast({
+            message: errorMessage,
+            type: 'error',
+          })
+        );
+      }
+    } catch (error) {
       dispatch(
         showToast({
-          message: 'Booking created successfully',
-          type: 'success',
+          message: 'An unexpected error occurred',
+          type: 'error',
         })
       );
     }
-
-    handleClose();
   };
 
   const handleDelete = () => {
     setConfirmDeleteOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (booking) {
-      dispatch(deleteBooking(booking.id));
-      dispatch(
-        showToast({
-          message: 'Booking deleted successfully',
-          type: 'success',
-        })
-      );
+      try {
+        const result = await dispatch(deleteBookingAsync(booking.id));
+        
+        if (deleteBookingAsync.fulfilled.match(result)) {
+          dispatch(
+            showToast({
+              message: 'Booking deleted successfully',
+              type: 'success',
+            })
+          );
+          setConfirmDeleteOpen(false);
+          handleClose();
+        } else {
+          // Handle error
+          const errorMessage = result.payload as string || 'Failed to delete booking';
+          dispatch(
+            showToast({
+              message: errorMessage,
+              type: 'error',
+            })
+          );
+          setConfirmDeleteOpen(false);
+        }
+      } catch (error) {
+        dispatch(
+          showToast({
+            message: 'An unexpected error occurred',
+            type: 'error',
+          })
+        );
+        setConfirmDeleteOpen(false);
+      }
     }
-    setConfirmDeleteOpen(false);
-    handleClose();
   };
 
   const handleClose = () => {
@@ -110,10 +187,14 @@ export const BookingModal = () => {
       <Modal open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <BookingForm
           booking={booking}
+          defaultStart={defaultTimes.start}
+          defaultEnd={defaultTimes.end}
           onSubmit={handleSubmit}
           onCancel={handleClose}
           onDelete={mode === 'edit' ? handleDelete : undefined}
           errors={errors}
+          loading={loading}
+          disabled={mode === 'edit'}
         />
       </Modal>
 

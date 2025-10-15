@@ -84,8 +84,9 @@ CREATE TABLE IF NOT EXISTS bookings (
   -- Primary Key
   id INT PRIMARY KEY AUTO_INCREMENT,
   
-  -- Foreign Key
+  -- Foreign Keys
   room_id INT NOT NULL,
+  user_id INT NULL,                     -- Optional: User who created the booking (NULL for anonymous/public bookings)
   
   -- Booking details
   title VARCHAR(255) NOT NULL,          -- Meeting title
@@ -99,11 +100,13 @@ CREATE TABLE IF NOT EXISTS bookings (
   -- When was this booking created
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  -- Foreign Key Constraint
+  -- Foreign Key Constraints
   FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
   
   -- Indexes for faster queries
   INDEX idx_room_id (room_id),
+  INDEX idx_user_id (user_id),
   INDEX idx_start (start),
   INDEX idx_end (end),
   

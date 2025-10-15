@@ -17,10 +17,13 @@ import { Toast } from './components/common/Toast';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
-function AppContent() {
-  // Load initial data from localStorage
+// Component inside Router context that handles data loading
+function DataLoader() {
   useLocalStorage();
+  return null; // This component only handles side effects
+}
 
+function AppContent() {
   return (
     <BrowserRouter
       future={{
@@ -28,6 +31,9 @@ function AppContent() {
         v7_relativeSplatPath: true,
       }}
     >
+      {/* Data loader inside Router context */}
+      <DataLoader />
+      
       <Routes>
         {/* Auth Routes (Public) */}
         <Route path="/login" element={<LoginPage />} />

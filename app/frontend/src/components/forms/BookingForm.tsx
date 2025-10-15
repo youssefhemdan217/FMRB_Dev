@@ -6,6 +6,7 @@ import {
   DialogActions,
   Button,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { Booking, BookingValidationErrors } from '../../types/booking.types';
 import { useState, useEffect } from 'react';
@@ -24,6 +25,8 @@ export interface BookingFormProps {
   onCancel: () => void;
   onDelete?: () => void;
   errors?: BookingValidationErrors;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 export const BookingForm = ({
@@ -34,6 +37,8 @@ export const BookingForm = ({
   onCancel,
   onDelete,
   errors = {},
+  loading = false,
+  disabled = false,
 }: BookingFormProps) => {
   const [title, setTitle] = useState('');
   const [organizer, setOrganizer] = useState('');
@@ -89,6 +94,21 @@ export const BookingForm = ({
       </DialogTitle>
       
       <DialogContent sx={{ pt: 3 }}>
+        {disabled && booking && (
+          <Alert 
+            severity="warning" 
+            sx={{ 
+              mb: 3,
+              borderRadius: 2,
+              '& .MuiAlert-icon': {
+                fontSize: '1.5rem',
+              },
+            }}
+          >
+            Editing bookings is not supported yet. Please delete this booking and create a new one if changes are needed.
+          </Alert>
+        )}
+
         {hasErrors && (
           <Alert 
             severity="error" 
@@ -116,6 +136,7 @@ export const BookingForm = ({
           error={!!errors.title}
           helperText={errors.title}
           placeholder="e.g., Team Standup, Client Meeting"
+          disabled={disabled || loading}
           sx={{ 
             mb: 2.5,
             '& .MuiOutlinedInput-root': {
@@ -135,6 +156,7 @@ export const BookingForm = ({
           value={organizer}
           onChange={(e) => setOrganizer(e.target.value)}
           placeholder="Your name (optional)"
+          disabled={disabled || loading}
           sx={{ 
             mb: 2.5,
             '& .MuiOutlinedInput-root': {
@@ -162,6 +184,7 @@ export const BookingForm = ({
             onChange={(e) => setStart(e.target.value)}
             error={!!errors.start}
             helperText={errors.start}
+            disabled={disabled || loading}
             InputLabelProps={{
               shrink: true,
             }}
@@ -185,6 +208,7 @@ export const BookingForm = ({
             onChange={(e) => setEnd(e.target.value)}
             error={!!errors.end}
             helperText={errors.end}
+            disabled={disabled || loading}
             InputLabelProps={{
               shrink: true,
             }}
@@ -216,11 +240,12 @@ export const BookingForm = ({
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
-        {booking && onDelete && (
+        {booking && onDelete && !disabled && (
           <Button 
             onClick={onDelete} 
             color="error" 
             variant="outlined"
+            disabled={loading}
             sx={{ 
               mr: 'auto',
               borderWidth: 2,
@@ -237,6 +262,7 @@ export const BookingForm = ({
         <Button 
           onClick={onCancel}
           variant="outlined"
+          disabled={loading}
           sx={{
             borderWidth: 2,
             '&:hover': {
@@ -251,11 +277,20 @@ export const BookingForm = ({
           variant="contained"
           size="large"
           color="primary"
+          disabled={disabled || loading}
           sx={{
             minWidth: 120,
           }}
         >
-          {booking ? 'Update' : 'Create'}
+          {loading ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : disabled ? (
+            'Editing Not Supported'
+          ) : booking ? (
+            'Update'
+          ) : (
+            'Create'
+          )}
         </Button>
       </DialogActions>
     </Box>

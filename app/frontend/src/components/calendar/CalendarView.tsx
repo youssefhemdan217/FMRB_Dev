@@ -2,7 +2,8 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
-import { Box, useTheme } from '@mui/material';
+import { Box, useTheme, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { Booking } from '../../types/booking.types';
 import { useRef } from 'react';
 
@@ -11,6 +12,7 @@ export interface CalendarViewProps {
   workHours: { start: string; end: string };
   onSlotSelect?: (start: Date, end: Date) => void;
   onEventClick?: (booking: Booking) => void;
+  onAddBooking?: () => void;
   disabled?: boolean;
 }
 
@@ -19,6 +21,7 @@ export const CalendarView = ({
   workHours,
   onSlotSelect,
   onEventClick,
+  onAddBooking,
   disabled = false,
 }: CalendarViewProps) => {
   const theme = useTheme();
@@ -55,6 +58,7 @@ export const CalendarView = ({
   return (
     <Box
       sx={{
+        position: 'relative',
         '& .fc': {
           backgroundColor: 'white',
           borderRadius: { xs: 3, md: 4 },
@@ -187,6 +191,29 @@ export const CalendarView = ({
           </Box>
         )}
       />
+
+      {/* Add Booking Button */}
+      {onAddBooking && !disabled && (
+        <Fab
+          color="primary"
+          aria-label="add booking"
+          onClick={onAddBooking}
+          sx={{
+            position: 'absolute',
+            bottom: { xs: 16, sm: 20 },
+            right: { xs: 16, sm: 20 },
+            zIndex: 1000,
+            boxShadow: '0 4px 20px rgba(0, 61, 82, 0.3)',
+            '&:hover': {
+              transform: 'scale(1.1)',
+              boxShadow: '0 6px 25px rgba(0, 61, 82, 0.4)',
+            },
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { Container, Typography, Box, Grid, Paper, alpha } from '@mui/material';
+import { Container, Typography, Box, Grid, Paper, alpha, Button } from '@mui/material';
 import { useState, useMemo } from 'react';
 import { useAppSelector } from '../store';
 import { selectAllRooms } from '../store/selectors/roomSelectors';
@@ -6,7 +6,10 @@ import { AnalyticsFilters } from '../components/analytics/AnalyticsFilters';
 import { HeatmapChart } from '../components/analytics/HeatmapChart';
 import { TrendChart } from '../components/analytics/TrendChart';
 import { LeaderboardTable } from '../components/analytics/LeaderboardTable';
-import { useAnalytics } from '../hooks/useAnalytics';
+import { LeadTimeDistributionChart } from '../components/analytics/LeadTimeDistributionChart';
+import { AnalyticsExport } from '../components/analytics/AnalyticsExport';
+import { useIntegratedAnalytics } from '../hooks/useIntegratedAnalytics';
+import { useRealTimeAnalytics } from '../hooks/useRealTimeAnalytics';
 import { getDateRangeForPreset } from '../utils/dateUtils';
 import { AnalyticsFilters as Filters, DateRangePreset } from '../types/analytics.types';
 import PercentIcon from '@mui/icons-material/Percent';
@@ -15,6 +18,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TimerIcon from '@mui/icons-material/Timer';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export const AnalyticsPage = () => {
   const rooms = useAppSelector(selectAllRooms);
@@ -34,7 +39,13 @@ export const AnalyticsPage = () => {
     }
   }, [filters.dateRangePreset]);
 
-  const analyticsData = useAnalytics(filters);
+  const analyticsData = useIntegratedAnalytics(filters);
+  
+  // Enable real-time updates
+  const { isUpdating, manualRefresh } = useRealTimeAnalytics({
+    enabled: true,
+    intervalMs: 30000, // Update every 30 seconds
+  });
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters);
@@ -76,6 +87,32 @@ export const AnalyticsPage = () => {
             <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
               Room usage insights and statistics
             </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={isUpdating ? <CircularProgress size={16} /> : <RefreshIcon />}
+              onClick={manualRefresh}
+              disabled={isUpdating}
+              sx={{
+                borderColor: alpha('#003D52', 0.3),
+                color: '#003D52',
+                '&:hover': {
+                  borderColor: '#003D52',
+                  backgroundColor: alpha('#003D52', 0.04),
+                },
+              }}
+            >
+              {isUpdating ? 'Updating...' : 'Refresh'}
+            </Button>
+            <AnalyticsExport
+              filters={filters}
+              kpis={analyticsData.kpis}
+              trendData={analyticsData.trendData}
+              leaderboardData={analyticsData.leaderboardData}
+              leadTimeData={analyticsData.leadTimeData}
+            />
           </Box>
         </Box>
       </Box>
@@ -343,6 +380,9 @@ export const AnalyticsPage = () => {
             label="Daily Occupied Minutes"
             dataKey="occupiedMinutes"
           />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <LeadTimeDistributionChart data={analyticsData.leadTimeData} />
         </Grid>
         <Grid item xs={12}>
           <LeaderboardTable data={analyticsData.leaderboardData} />

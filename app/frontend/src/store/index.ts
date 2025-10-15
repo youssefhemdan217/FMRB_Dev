@@ -4,6 +4,7 @@ import roomsReducer from './slices/roomsSlice';
 import bookingsReducer from './slices/bookingsSlice';
 import uiReducer from './slices/uiSlice';
 import authReducer from './slices/authSlice';
+import analyticsReducer from './slices/analyticsSlice';
 
 /**
  * LocalStorage middleware to persist bookings
@@ -48,9 +49,19 @@ export const store = configureStore({
     rooms: roomsReducer,
     bookings: bookingsReducer,
     ui: uiReducer,
+    analytics: analyticsReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(localStorageMiddleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+        ignoredActions: ['analytics/fetchSummary/fulfilled'],
+        // Ignore these field paths in all actions
+        ignoredActionPaths: ['meta.arg', 'payload.timestamp'],
+        // Ignore these paths in the state
+        ignoredPaths: ['analytics.lastFetched'],
+      },
+    }).concat(localStorageMiddleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

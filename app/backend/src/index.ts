@@ -24,6 +24,7 @@ import { UpdateUserRoleUseCase } from './application/use-cases/auth/UpdateUserRo
 import { CreateRoomUseCase } from './application/use-cases/rooms/CreateRoom';
 import { GetAllRoomsUseCase } from './application/use-cases/rooms/GetAllRooms';
 import { CreateBookingUseCase } from './application/use-cases/bookings/CreateBooking';
+import { UpdateBookingUseCase } from './application/use-cases/bookings/UpdateBooking';
 import { GetAnalyticsSummaryUseCase } from './application/use-cases/analytics/GetAnalyticsSummary';
 
 // Presentation
@@ -73,6 +74,10 @@ class DIContainer {
     this.bookingRepository,
     this.roomRepository
   );
+  public readonly updateBookingUseCase = new UpdateBookingUseCase(
+    this.bookingRepository,
+    this.roomRepository
+  );
   public readonly getAnalyticsSummaryUseCase = new GetAnalyticsSummaryUseCase(
     this.bookingRepository,
     this.roomRepository,
@@ -94,6 +99,7 @@ class DIContainer {
   );
   public readonly bookingController = new BookingController(
     this.createBookingUseCase,
+    this.updateBookingUseCase,
     this.bookingRepository
   );
   public readonly analyticsController = new AnalyticsController(

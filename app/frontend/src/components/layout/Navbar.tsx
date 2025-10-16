@@ -30,10 +30,12 @@ import { showToast } from '../../store/slices/uiSlice';
 import { useConfirm } from '../../hooks/useConfirm';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 
-const navItems = [
+const getAllNavItems = (isAdmin: boolean) => [
   { label: 'Rooms', path: '/rooms' },
-  { label: 'Room Management', path: '/rooms/manage' },
-  { label: 'Analytics', path: '/analytics' },
+  ...(isAdmin ? [
+    { label: 'Room Management', path: '/rooms/manage' },
+    { label: 'Analytics', path: '/analytics' },
+  ] : []),
 ];
 
 export const Navbar = () => {
@@ -46,6 +48,10 @@ export const Navbar = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
+
+  // Filter navigation items based on user role
+  const isAdmin = user?.role === 'admin';
+  const navItems = getAllNavItems(isAdmin);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

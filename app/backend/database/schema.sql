@@ -14,7 +14,7 @@ USE fmrb_db;
 -- ====================================
 -- This table stores user accounts for authentication
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS mb_users (
   -- Primary Key
   id INT PRIMARY KEY AUTO_INCREMENT,
   
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- This table stores all meeting rooms
 -- Similar to a MongoDB collection, but with a fixed structure (schema)
 
-CREATE TABLE IF NOT EXISTS rooms (
+CREATE TABLE IF NOT EXISTS mb_rooms (
   -- Primary Key: Unique identifier for each room
   -- AUTO_INCREMENT means MySQL will automatically assign numbers (1, 2, 3...)
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS rooms (
 -- This table stores all room bookings
 -- Has a FOREIGN KEY relationship with rooms table
 
-CREATE TABLE IF NOT EXISTS bookings (
+CREATE TABLE IF NOT EXISTS mb_bookings (
   -- Primary Key
   id INT PRIMARY KEY AUTO_INCREMENT,
   
@@ -101,8 +101,8 @@ CREATE TABLE IF NOT EXISTS bookings (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Foreign Key Constraints
-  FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (room_id) REFERENCES mb_rooms(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES mb_users(id) ON DELETE SET NULL,
   
   -- Indexes for faster queries
   INDEX idx_room_id (room_id),

@@ -94,20 +94,6 @@ export const BookingForm = ({
       </DialogTitle>
       
       <DialogContent sx={{ pt: 3 }}>
-        {disabled && booking && (
-          <Alert 
-            severity="warning" 
-            sx={{ 
-              mb: 3,
-              borderRadius: 2,
-              '& .MuiAlert-icon': {
-                fontSize: '1.5rem',
-              },
-            }}
-          >
-            Editing bookings is not supported yet. Please delete this booking and create a new one if changes are needed.
-          </Alert>
-        )}
 
         {hasErrors && (
           <Alert 

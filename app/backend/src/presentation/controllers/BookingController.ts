@@ -1,12 +1,14 @@
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from '../middlewares/authenticate';
 import { CreateBookingUseCase } from '../../application/use-cases/bookings/CreateBooking';
+import { UpdateBookingUseCase } from '../../application/use-cases/bookings/UpdateBooking';
 import { IBookingRepository } from '../../domain/interfaces/IBookingRepository';
 import { NotFoundError } from '../../domain/errors/DomainErrors';
 
 export class BookingController {
   constructor(
     private createBookingUseCase: CreateBookingUseCase,
+    private updateBookingUseCase: UpdateBookingUseCase,
     private bookingRepository: IBookingRepository
   ) {}
 
@@ -63,6 +65,24 @@ export class BookingController {
       const booking = await this.createBookingUseCase.execute(req.body);
       
       res.status(201).json({
+        id: booking.id,
+        roomId: booking.roomId,
+        title: booking.title,
+        organizer: booking.organizer,
+        start: booking.start.toISOString(),
+        end: booking.end.toISOString(),
+        createdAt: booking.createdAt.toISOString(),
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  update = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const booking = await this.updateBookingUseCase.execute(req.params.id, req.body);
+      
+      res.json({
         id: booking.id,
         roomId: booking.roomId,
         title: booking.title,

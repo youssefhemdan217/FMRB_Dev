@@ -7,7 +7,7 @@ export class MySQLRoomRepository implements IRoomRepository {
 
   async create(data: RoomCreateData): Promise<Room> {
     const [result] = await this.pool.execute(
-      `INSERT INTO rooms (name, location, capacity, is_active, work_hours_start, work_hours_end, amenities) 
+      `INSERT INTO mb_rooms (name, location, capacity, is_active, work_hours_start, work_hours_end, amenities) 
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         data.name,
@@ -27,7 +27,7 @@ export class MySQLRoomRepository implements IRoomRepository {
 
   async findById(id: string): Promise<Room | null> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM rooms WHERE id = ?`,
+      `SELECT * FROM mb_rooms WHERE id = ?`,
       [id]
     );
 
@@ -37,7 +37,7 @@ export class MySQLRoomRepository implements IRoomRepository {
 
   async findAll(): Promise<Room[]> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM rooms ORDER BY name`
+      `SELECT * FROM mb_rooms ORDER BY name`
     );
     return rows.map(this.mapRowToRoom);
   }
@@ -79,7 +79,7 @@ export class MySQLRoomRepository implements IRoomRepository {
 
     if (updates.length > 0) {
       await this.pool.execute(
-        `UPDATE rooms SET ${updates.join(', ')}, updated_at = NOW() WHERE id = ?`,
+        `UPDATE mb_rooms SET ${updates.join(', ')}, updated_at = NOW() WHERE id = ?`,
         values
       );
     }
@@ -89,7 +89,7 @@ export class MySQLRoomRepository implements IRoomRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.pool.execute(`DELETE FROM rooms WHERE id = ?`, [id]);
+    await this.pool.execute(`DELETE FROM mb_rooms WHERE id = ?`, [id]);
   }
 
   private mapRowToRoom(row: RowDataPacket): Room {

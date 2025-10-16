@@ -7,7 +7,7 @@ export class MySQLUserRepository implements IUserRepository {
 
   async create(data: UserCreateData): Promise<User> {
     const [result] = await this.pool.execute(
-      `INSERT INTO users (email, password, name, role, is_active) VALUES (?, ?, ?, ?, ?)`,
+      `INSERT INTO mb_users (email, password, name, role, is_active) VALUES (?, ?, ?, ?, ?)`,
       [data.email, data.password, data.name, data.role || UserRole.USER, true]
     );
 
@@ -18,7 +18,7 @@ export class MySQLUserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM users WHERE id = ?`,
+      `SELECT * FROM mb_users WHERE id = ?`,
       [id]
     );
 
@@ -28,7 +28,7 @@ export class MySQLUserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM users WHERE email = ?`,
+      `SELECT * FROM mb_users WHERE email = ?`,
       [email]
     );
 
@@ -37,7 +37,7 @@ export class MySQLUserRepository implements IUserRepository {
   }
 
   async findAll(): Promise<User[]> {
-    const [rows] = await this.pool.execute<RowDataPacket[]>(`SELECT * FROM users`);
+    const [rows] = await this.pool.execute<RowDataPacket[]>(`SELECT * FROM mb_users`);
     return rows.map(this.mapRowToUser);
   }
 
@@ -66,7 +66,7 @@ export class MySQLUserRepository implements IUserRepository {
 
     if (updates.length > 0) {
       await this.pool.execute(
-        `UPDATE users SET ${updates.join(', ')}, updated_at = NOW() WHERE id = ?`,
+        `UPDATE mb_users SET ${updates.join(', ')}, updated_at = NOW() WHERE id = ?`,
         values
       );
     }
@@ -77,7 +77,7 @@ export class MySQLUserRepository implements IUserRepository {
 
   async updateRole(id: string, role: UserRole): Promise<User> {
     await this.pool.execute(
-      `UPDATE users SET role = ?, updated_at = NOW() WHERE id = ?`,
+      `UPDATE mb_users SET role = ?, updated_at = NOW() WHERE id = ?`,
       [role, id]
     );
 
@@ -86,7 +86,7 @@ export class MySQLUserRepository implements IUserRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.pool.execute(`DELETE FROM users WHERE id = ?`, [id]);
+    await this.pool.execute(`DELETE FROM mb_users WHERE id = ?`, [id]);
   }
 
   private mapRowToUser(row: RowDataPacket): User {

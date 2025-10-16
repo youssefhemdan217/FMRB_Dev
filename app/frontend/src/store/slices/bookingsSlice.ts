@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Booking } from '../../types/booking.types';
-import { bookingsApi, CreateBookingDTO } from '../../services/api/bookings.api';
+import { bookingsApi, CreateBookingDTO, UpdateBookingDTO } from '../../services/api/bookings.api';
 
 // Async thunks for API operations
 export const fetchAllBookings = createAsyncThunk(
@@ -9,8 +9,11 @@ export const fetchAllBookings = createAsyncThunk(
     try {
       const bookings = await bookingsApi.getAll();
       return bookings;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch bookings');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || 'Failed to fetch bookings'
+        : 'Failed to fetch bookings';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -21,8 +24,11 @@ export const fetchBookingsByRoomId = createAsyncThunk(
     try {
       const bookings = await bookingsApi.getByRoomId(roomId);
       return bookings;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch room bookings');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || 'Failed to fetch room bookings'
+        : 'Failed to fetch room bookings';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -33,8 +39,11 @@ export const fetchBookingById = createAsyncThunk(
     try {
       const booking = await bookingsApi.getById(id);
       return booking;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch booking');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || 'Failed to fetch booking'
+        : 'Failed to fetch booking';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -45,8 +54,26 @@ export const createBookingAsync = createAsyncThunk(
     try {
       const booking = await bookingsApi.create(bookingData);
       return booking;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create booking');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || 'Failed to create booking'
+        : 'Failed to create booking';
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const updateBookingAsync = createAsyncThunk(
+  'bookings/update',
+  async ({ id, data }: { id: string; data: UpdateBookingDTO }, { rejectWithValue }) => {
+    try {
+      const updatedBooking = await bookingsApi.update(id, data);
+      return updatedBooking;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || 'Failed to update booking'
+        : 'Failed to update booking';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -57,8 +84,11 @@ export const deleteBookingAsync = createAsyncThunk(
     try {
       await bookingsApi.delete(id);
       return id;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to delete booking');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || 'Failed to delete booking'
+        : 'Failed to delete booking';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -171,6 +201,25 @@ const bookingsSlice = createSlice({
         state.error = null;
       })
       .addCase(createBookingAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+    // Update booking
+    builder
+      .addCase(updateBookingAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateBookingAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.bookings.findIndex((b) => b.id === action.payload.id);
+        if (index !== -1) {
+          state.bookings[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(updateBookingAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

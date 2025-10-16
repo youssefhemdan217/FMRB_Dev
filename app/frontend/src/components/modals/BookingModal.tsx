@@ -2,7 +2,7 @@ import { Modal } from '../common/Modal';
 import { BookingForm } from '../forms/BookingForm';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { closeBookingModal, showToast } from '../../store/slices/uiSlice';
-import { createBookingAsync, deleteBookingAsync } from '../../store/slices/bookingsSlice';
+import { createBookingAsync, updateBookingAsync, deleteBookingAsync } from '../../store/slices/bookingsSlice';
 import { selectBookingsByRoomId } from '../../store/selectors/roomSelectors';
 import { validateBooking } from '../../utils/validators';
 import { BookingValidationErrors } from '../../types/booking.types';
@@ -85,46 +85,66 @@ export const BookingModal = () => {
       return;
     }
 
-    if (mode === 'edit' && booking) {
-      // Edit mode is not supported by the backend API
-      dispatch(
-        showToast({
-          message: 'Editing bookings is not supported yet. Please delete and create a new booking.',
-          type: 'warning',
-        })
-      );
-      return;
-    }
-
-    // Create new booking
     try {
-      const bookingData = {
-        roomId,
-        title: data.title,
-        organizer: data.organizer,
-        start: data.start,
-        end: data.end,
-      };
+      if (mode === 'edit' && booking) {
+        // Update existing booking
+        const updateData = {
+          title: data.title,
+          organizer: data.organizer,
+          start: data.start,
+          end: data.end,
+        };
 
-      const result = await dispatch(createBookingAsync(bookingData));
-      
-      if (createBookingAsync.fulfilled.match(result)) {
-        dispatch(
-          showToast({
-            message: 'Booking created successfully',
-            type: 'success',
-          })
-        );
-        handleClose();
+        const result = await dispatch(updateBookingAsync({ id: booking.id, data: updateData }));
+        
+        if (updateBookingAsync.fulfilled.match(result)) {
+          dispatch(
+            showToast({
+              message: 'Booking updated successfully',
+              type: 'success',
+            })
+          );
+          handleClose();
+        } else {
+          // Handle error
+          const errorMessage = result.payload as string || 'Failed to update booking';
+          dispatch(
+            showToast({
+              message: errorMessage,
+              type: 'error',
+            })
+          );
+        }
       } else {
-        // Handle error
-        const errorMessage = result.payload as string || 'Failed to create booking';
-        dispatch(
-          showToast({
-            message: errorMessage,
-            type: 'error',
-          })
-        );
+        // Create new booking
+        const bookingData = {
+          roomId,
+          title: data.title,
+          organizer: data.organizer,
+          start: data.start,
+          end: data.end,
+        };
+
+        const result = await dispatch(createBookingAsync(bookingData));
+        
+        if (createBookingAsync.fulfilled.match(result)) {
+          dispatch(
+            showToast({
+              message: 'Booking created successfully',
+              type: 'success',
+            })
+          );
+          handleClose();
+        } else {
+          // Handle error
+          const errorMessage = result.payload as string || 'Failed to create booking';
+          dispatch(
+            showToast({
+              message: errorMessage,
+              type: 'error',
+            })
+          );
+        }
       }
     } catch (error) {
       dispatch(
@@ -194,7 +214,6 @@ export const BookingModal = () => {
           onDelete={mode === 'edit' ? handleDelete : undefined}
           errors={errors}
           loading={loading}
-          disabled={mode === 'edit'}
         />
       </Modal>
 

@@ -7,7 +7,7 @@ export class MySQLBookingRepository implements IBookingRepository {
 
   async create(data: BookingCreateData): Promise<Booking> {
     const [result] = await this.pool.execute(
-      `INSERT INTO bookings (room_id, title, organizer, start, end) 
+      `INSERT INTO mb_bookings (room_id, title, organizer, start, end) 
        VALUES (?, ?, ?, ?, ?)`,
       [data.roomId, data.title, data.organizer || null, data.start, data.end]
     );
@@ -19,7 +19,7 @@ export class MySQLBookingRepository implements IBookingRepository {
 
   async findById(id: string): Promise<Booking | null> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM bookings WHERE id = ?`,
+      `SELECT * FROM mb_bookings WHERE id = ?`,
       [id]
     );
 
@@ -29,14 +29,14 @@ export class MySQLBookingRepository implements IBookingRepository {
 
   async findAll(): Promise<Booking[]> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM bookings ORDER BY start ASC`
+      `SELECT * FROM mb_bookings ORDER BY start ASC`
     );
     return rows.map(this.mapRowToBooking);
   }
 
   async findByRoomId(roomId: string): Promise<Booking[]> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM bookings WHERE room_id = ? ORDER BY start ASC`,
+      `SELECT * FROM mb_bookings WHERE room_id = ? ORDER BY start ASC`,
       [roomId]
     );
     return rows.map(this.mapRowToBooking);
@@ -44,14 +44,14 @@ export class MySQLBookingRepository implements IBookingRepository {
 
   async findByUserId(userId: string): Promise<Booking[]> {
     const [rows] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT * FROM bookings WHERE user_id = ? ORDER BY start ASC`,
+      `SELECT * FROM mb_bookings WHERE user_id = ? ORDER BY start ASC`,
       [userId]
     );
     return rows.map(this.mapRowToBooking);
   }
 
   async findOverlapping(roomId: string, start: Date, end: Date, excludeId?: string): Promise<Booking[]> {
-    let sql = `SELECT * FROM bookings WHERE room_id = ? AND start < ? AND end > ?`;
+    let sql = `SELECT * FROM mb_bookings WHERE room_id = ? AND start < ? AND end > ?`;
     const params: any[] = [roomId, end, start];
 
     if (excludeId) {
@@ -88,7 +88,7 @@ export class MySQLBookingRepository implements IBookingRepository {
 
     if (updates.length > 0) {
       await this.pool.execute(
-        `UPDATE bookings SET ${updates.join(', ')} WHERE id = ?`,
+        `UPDATE mb_bookings SET ${updates.join(', ')} WHERE id = ?`,
         values
       );
     }
@@ -98,7 +98,7 @@ export class MySQLBookingRepository implements IBookingRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.pool.execute(`DELETE FROM bookings WHERE id = ?`, [id]);
+    await this.pool.execute(`DELETE FROM mb_bookings WHERE id = ?`, [id]);
   }
 
   private mapRowToBooking(row: RowDataPacket): Booking {

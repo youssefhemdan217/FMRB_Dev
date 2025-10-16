@@ -1,19 +1,20 @@
-import { Container, Typography, Box, Paper, alpha, CircularProgress } from '@mui/material';
+import { Container, Typography, Box, alpha, CircularProgress, Button, ButtonGroup } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../store';
 import { selectAllRooms, selectAllBookings } from '../store/selectors/roomSelectors';
-import { RoomFilters } from '../components/rooms/RoomFilters';
 import { RoomGrid } from '../components/rooms/RoomGrid';
+import { RoomTableView } from '../components/rooms/RoomTableView';
 import { useRoomFilters } from '../hooks/useFilters';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { RoomStatus } from '../types/room.types';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import EventBusyIcon from '@mui/icons-material/EventBusy';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import GridViewIcon from '@mui/icons-material/GridView';
+import TableViewIcon from '@mui/icons-material/TableView';
 import { calculateRoomStatus } from '../utils/dateUtils';
 import { fetchRooms } from '../store/slices/roomsSlice';
 import { showToast } from '../store/slices/uiSlice';
+
+type ViewMode = 'grid' | 'table';
 
 export const RoomsPage = () => {
   const navigate = useNavigate();
@@ -21,8 +22,9 @@ export const RoomsPage = () => {
   const rooms = useAppSelector(selectAllRooms);
   const bookings = useAppSelector(selectAllBookings);
   const { loading } = useAppSelector((state) => state.rooms);
-  const { activeFilter, searchQuery, setActiveFilter, setSearchQuery, filterRooms } =
-    useRoomFilters();
+  const { filterRooms } = useRoomFilters();
+  
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   // Fetch rooms on component mount
   useEffect(() => {
@@ -55,17 +57,6 @@ export const RoomsPage = () => {
 
   // Filter rooms
   const filteredRooms = filterRooms(rooms, roomStatuses);
-
-  // Calculate summary stats
-  const availableNow = Array.from(roomStatuses.values()).filter(
-    (s) => s.status === 'available'
-  ).length;
-  
-  const busyNow = Array.from(roomStatuses.values()).filter(
-    (s) => s.status === 'busy'
-  ).length;
-  
-  const inactiveRooms = rooms.filter(room => !room.isActive).length;
 
   const handleRoomClick = (roomId: string) => {
     navigate(`/rooms/${roomId}`);
@@ -122,6 +113,64 @@ export const RoomsPage = () => {
               Browse and book available rooms for your team
             </Typography>
           </Box>
+          
+          {/* View Toggle Buttons */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, display: { xs: 'none', sm: 'block' } }}>
+              View:
+            </Typography>
+            <ButtonGroup
+              variant="outlined"
+              size="small"
+              sx={{
+                '& .MuiButton-root': {
+                  borderColor: alpha('#003D52', 0.3),
+                  '&:not(:last-of-type)': {
+                    borderRightColor: alpha('#003D52', 0.3),
+                  },
+                },
+              }}
+            >
+              <Button
+                onClick={() => setViewMode('grid')}
+                sx={{
+                  backgroundColor: viewMode === 'grid' ? '#003D52 !important' : 'transparent',
+                  color: viewMode === 'grid' ? 'white !important' : '#003D52',
+                  borderColor: alpha('#003D52', 0.3),
+                  '&:hover': {
+                    backgroundColor: viewMode === 'grid' ? '#002A3A !important' : alpha('#003D52', 0.05),
+                    borderColor: '#003D52',
+                    color: viewMode === 'grid' ? 'white !important' : '#003D52',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: viewMode === 'grid' ? 'white !important' : '#003D52',
+                  },
+                }}
+                startIcon={<GridViewIcon />}
+              >
+                Grid
+              </Button>
+              <Button
+                onClick={() => setViewMode('table')}
+                sx={{
+                  backgroundColor: viewMode === 'table' ? '#003D52 !important' : 'transparent',
+                  color: viewMode === 'table' ? 'white !important' : '#003D52',
+                  borderColor: alpha('#003D52', 0.3),
+                  '&:hover': {
+                    backgroundColor: viewMode === 'table' ? '#002A3A !important' : alpha('#003D52', 0.05),
+                    borderColor: '#003D52',
+                    color: viewMode === 'table' ? 'white !important' : '#003D52',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: viewMode === 'table' ? 'white !important' : '#003D52',
+                  },
+                }}
+                startIcon={<TableViewIcon />}
+              >
+                Table
+              </Button>
+            </ButtonGroup>
+          </Box>
         </Box>
 
         {/* Compact Stats Grid */}
@@ -133,7 +182,7 @@ export const RoomsPage = () => {
           }}
         >
           {/* Total Rooms */}
-          <Paper
+          {/* <Paper
             sx={{
               p: 2.5,
               backgroundColor: alpha('#003D52', 0.05),
@@ -173,10 +222,10 @@ export const RoomsPage = () => {
                 </Typography>
               </Box>
             </Box>
-          </Paper>
+          </Paper> */}
 
           {/* Available Now */}
-          <Paper
+          {/* <Paper
             sx={{
               p: 2.5,
               backgroundColor: alpha('#10b981', 0.05),
@@ -219,10 +268,10 @@ export const RoomsPage = () => {
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
               {Math.round((availableNow / Math.max(rooms.length, 1)) * 100)}% free now
             </Typography>
-          </Paper>
+          </Paper> */}
 
           {/* Busy Now */}
-          <Paper
+          {/* <Paper
             sx={{
               p: 2.5,
               backgroundColor: alpha('#ef4444', 0.05),
@@ -265,10 +314,10 @@ export const RoomsPage = () => {
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
               {Math.round((busyNow / Math.max(rooms.length, 1)) * 100)}% occupied
             </Typography>
-          </Paper>
+          </Paper> */}
 
           {/* Inactive */}
-          <Paper
+          {/* <Paper
             sx={{
               p: 2.5,
               backgroundColor: alpha('#6b7280', 0.05),
@@ -311,21 +360,25 @@ export const RoomsPage = () => {
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
               Out of service
             </Typography>
-          </Paper>
+          </Paper> */}
         </Box>
       </Box>
 
       {/* Filters */}
-      <RoomFilters
+      {/* <RoomFilters
         activeFilter={activeFilter}
         searchQuery={searchQuery}
         onFilterChange={setActiveFilter}
         onSearchChange={setSearchQuery}
         resultCount={filteredRooms.length}
-      />
+      /> */}
 
-      {/* Room grid */}
-      <RoomGrid rooms={filteredRooms} statuses={roomStatuses} onRoomClick={handleRoomClick} />
+      {/* Room display - Grid or Table view */}
+      {viewMode === 'grid' ? (
+        <RoomGrid rooms={filteredRooms} statuses={roomStatuses} onRoomClick={handleRoomClick} />
+      ) : (
+        <RoomTableView rooms={filteredRooms} statuses={roomStatuses} onRoomClick={handleRoomClick} />
+      )}
     </Container>
   );
 };

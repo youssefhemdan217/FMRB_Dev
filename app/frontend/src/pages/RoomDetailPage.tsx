@@ -107,7 +107,7 @@ export const RoomDetailPage = () => {
 
   if (!id) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 2 }}>
         <Alert severity="error">Invalid room ID</Alert>
       </Container>
     );
@@ -116,7 +116,7 @@ export const RoomDetailPage = () => {
   // Show loading spinner while fetching room data
   if (isLoadingRoom) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 2 }}>
         <LoadingSpinner />
       </Container>
     );
@@ -125,7 +125,7 @@ export const RoomDetailPage = () => {
   // Show error if room fetch failed
   if (error && !room && !isLoadingRoom) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 2 }}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
@@ -143,8 +143,8 @@ export const RoomDetailPage = () => {
   // If still no room after loading completed, show not found
   if (!room && !isLoadingRoom) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Alert severity="warning" sx={{ mb: 2 }}>
+      <Container maxWidth="xl" sx={{ py: 2 }}>
+        <Alert severity="warning" sx={{ mb: 1 }}>
           Room not found
         </Alert>
         <Button
@@ -206,8 +206,8 @@ export const RoomDetailPage = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
-      <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 1, sm: 1.5, md: 2 }, px: { xs: 1, sm: 2 } }}>
+      <Box sx={{ mb: { xs: 1, sm: 1 } }}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate('/rooms')}

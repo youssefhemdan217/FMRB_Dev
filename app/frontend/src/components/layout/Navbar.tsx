@@ -18,7 +18,6 @@ import {
   Divider,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -108,9 +107,27 @@ export const Navbar = () => {
 
   const drawer = (
     <Box sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        Room Booking
-      </Typography>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        
+        gap: 1 
+      }}>
+        <img 
+          src="/logo.png" 
+          alt="Saipem Logo" 
+          style={{ 
+            height: '40px', 
+            width: 'auto',
+            objectFit: 'contain',
+            borderRadius: '8px'
+          }} 
+        />
+        <Typography variant="h6" sx={{ color: '#003D52', fontWeight: 700 }}>
+          BookMeeting
+        </Typography>
+      </Box>
       <List>
         {navItems.map((item) => (
           <ListItem key={item.path} disablePadding>
@@ -194,13 +211,20 @@ export const Navbar = () => {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
-              borderRadius: 2,
-              p: 0.75,
+              height: '100%',
               mr: 1.5,
             }}
           >
-            <MeetingRoomIcon sx={{ fontSize: 28 }} />
+            <img 
+              src="/logo.png" 
+              alt="Saipem Logo" 
+              style={{ 
+                height: '40px', 
+                width: 'auto',
+                objectFit: 'contain',
+                borderRadius: '8px'
+              }} 
+            />
           </Box>
           
           <Typography

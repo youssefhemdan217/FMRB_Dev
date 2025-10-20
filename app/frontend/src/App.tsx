@@ -10,6 +10,7 @@ import { RoomDetailPage } from './pages/RoomDetailPage';
 import { RoomManagementPage } from './pages/RoomManagementPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { ApprovalPage } from './pages/ApprovalPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { BookingModal } from './components/modals/BookingModal';
@@ -53,6 +54,7 @@ function AppContent() {
           <Route path="rooms/:id" element={<RoomDetailPage />} />
           <Route path="rooms/manage" element={<RoomManagementPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="approvals" element={<ApprovalPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

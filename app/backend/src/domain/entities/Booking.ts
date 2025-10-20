@@ -1,10 +1,12 @@
 export interface Booking {
   id: string;
   roomId: string;
+  userId?: string;
   title: string;
   organizer?: string;
   start: Date;
   end: Date;
+  status: 'pending' | 'approved' | 'declined';
   createdAt: Date;
 }
 
@@ -14,6 +16,7 @@ export interface BookingCreateData {
   organizer?: string;
   start: Date;
   end: Date;
+  status?: 'pending' | 'approved' | 'declined';
 }
 
 export interface BookingUpdateData {
@@ -21,5 +24,6 @@ export interface BookingUpdateData {
   organizer?: string;
   start?: Date;
   end?: Date;
+  status?: 'pending' | 'approved' | 'declined';
 }
 

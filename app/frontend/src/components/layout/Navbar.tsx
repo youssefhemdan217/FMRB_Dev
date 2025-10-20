@@ -29,13 +29,20 @@ import { showToast } from '../../store/slices/uiSlice';
 import { useConfirm } from '../../hooks/useConfirm';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 
-const getAllNavItems = (isAdmin: boolean) => [
-  { label: 'Rooms', path: '/rooms' },
-  ...(isAdmin ? [
-    { label: 'Room Management', path: '/rooms/manage' },
-    { label: 'Analytics', path: '/analytics' },
-  ] : []),
-];
+const getAllNavItems = (role?: string) => {
+  const isAdmin = role === 'admin';
+  const isApproval = role === 'approval';
+  return [
+    { label: 'Rooms', path: '/rooms' },
+    ...((isAdmin || isApproval) ? [
+      { label: 'Approval', path: '/approvals' },
+    ] : []),
+    ...(isAdmin ? [
+      { label: 'Room Management', path: '/rooms/manage' },
+      { label: 'Analytics', path: '/analytics' },
+    ] : []),
+  ];
+};
 
 export const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -49,8 +56,7 @@ export const Navbar = () => {
   const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
 
   // Filter navigation items based on user role
-  const isAdmin = user?.role === 'admin';
-  const navItems = getAllNavItems(isAdmin);
+  const navItems = getAllNavItems(user?.role);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -138,10 +144,10 @@ export const Navbar = () => {
               onClick={handleDrawerToggle}
               sx={{
                 '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
+                  backgroundColor: '#003D52',
                   color: 'white',
                   '&:hover': {
-                    backgroundColor: 'primary.dark',
+                    backgroundColor: '#002A3A',
                   },
                 },
               }}
@@ -185,25 +191,28 @@ export const Navbar = () => {
         position="sticky" 
         elevation={0}
         sx={{
-          backgroundColor: '#003D52',
+          backgroundColor: 'white',
+          color: '#003D52',
           borderRadius: 0,
+          borderBottom: '1px solid rgba(0, 61, 82, 0.2)',
         }}
       >
-        <Toolbar sx={{ minHeight: { xs: 64, sm: 70 } }}>
+        <Toolbar sx={{ minHeight: { xs: 56, sm: 60 }, px: { xs: 1, sm: 2 } }}>
           {isMobile && (
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
+              size="small"
               onClick={handleDrawerToggle}
               sx={{ 
-                mr: 2,
+                mr: 1,
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                  backgroundColor: 'rgba(0, 61, 82, 0.08)',
                 },
               }}
             >
-              <MenuIcon />
+              <MenuIcon fontSize="small" />
             </IconButton>
           )}
           
@@ -212,14 +221,14 @@ export const Navbar = () => {
               display: 'flex',
               alignItems: 'center',
               height: '100%',
-              mr: 1.5,
+              mr: 1,
             }}
           >
             <img 
               src="/logo.png" 
               alt="Saipem Logo" 
               style={{ 
-                height: '40px', 
+                height: '36px', 
                 width: 'auto',
                 objectFit: 'contain',
                 borderRadius: '8px'
@@ -236,7 +245,7 @@ export const Navbar = () => {
               textDecoration: 'none',
               color: 'inherit',
               fontWeight: 700,
-              fontSize: { xs: '1.1rem', sm: '1.25rem' },
+              fontSize: { xs: '1.05rem', sm: '1.2rem' },
               letterSpacing: '-0.5px',
               '&:hover': {
                 opacity: 0.9,
@@ -257,24 +266,25 @@ export const Navbar = () => {
                 >
                   <Box
                     sx={{
-                      px: 2.5,
-                      py: 1.25,
-                      borderRadius: 2.5,
+                      px: 2,
+                      py: 0.75,
+                      borderRadius: 2,
                       backgroundColor: isActivePath(item.path)
-                        ? 'rgba(255, 255, 255, 0.25)'
+                        ? 'rgba(0, 61, 82, 0.08)'
                         : 'transparent',
-                      color: 'white',
+                      color: '#003D52',
+                      fontSize: '0.9375rem',
                       fontWeight: isActivePath(item.path) ? 600 : 500,
                       backdropFilter: isActivePath(item.path) ? 'blur(10px)' : 'none',
                       border: isActivePath(item.path) 
-                        ? '1px solid rgba(255, 255, 255, 0.3)'
+                        ? '1px solid rgba(0, 61, 82, 0.3)'
                         : '1px solid transparent',
                       '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        backgroundColor: 'rgba(0, 61, 82, 0.08)',
+                        border: '1px solid rgba(0, 61, 82, 0.3)',
                         backdropFilter: 'blur(10px)',
                       },
-                      transition: 'all 0.3s ease',
+                      transition: 'all 0.2s ease',
                       cursor: 'pointer',
                     }}
                   >
@@ -284,24 +294,26 @@ export const Navbar = () => {
               ))}
 
               {/* Auth Section */}
-              <Box sx={{ ml: 2, display: 'flex', gap: 1 }}>
+              <Box sx={{ ml: 1.5, display: 'flex', gap: 1 }}>
                 {isAuthenticated && user ? (
                   <>
                     <IconButton
                       onClick={handleProfileMenuOpen}
+                      size="small"
                       sx={{
-                        color: 'white',
+                        color: '#003D52',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                          backgroundColor: 'rgba(0, 61, 82, 0.08)',
                         },
                       }}
                     >
                       <Avatar
                         sx={{
-                          width: 36,
-                          height: 36,
-                          bgcolor: 'rgba(255, 255, 255, 0.25)',
-                          fontSize: '1rem',
+                          width: 32,
+                          height: 32,
+                          bgcolor: 'rgba(0, 61, 82, 0.12)',
+                          fontSize: '0.9rem',
+                          color: '#003D52',
                         }}
                       >
                         {user.name.charAt(0).toUpperCase()}
@@ -349,13 +361,17 @@ export const Navbar = () => {
                     <Button
                       component={Link}
                       to="/login"
-                      startIcon={<LoginIcon />}
+                      startIcon={<LoginIcon fontSize="small" />}
+                      size="small"
                       sx={{
-                        color: 'white',
-                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        color: '#003D52',
+                        borderColor: 'rgba(0, 61, 82, 0.3)',
+                        px: 1.5,
+                        py: 0.5,
+                        fontSize: '0.875rem',
                         '&:hover': {
-                          borderColor: 'white',
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                          borderColor: '#003D52',
+                          backgroundColor: 'rgba(0, 61, 82, 0.08)',
                         },
                       }}
                       variant="outlined"
@@ -365,12 +381,17 @@ export const Navbar = () => {
                     <Button
                       component={Link}
                       to="/register"
-                      startIcon={<PersonAddIcon />}
+                      startIcon={<PersonAddIcon fontSize="small" />}
+                      size="small"
                       sx={{
                         color: '#003D52',
                         backgroundColor: 'white',
+                        border: '1px solid rgba(0, 61, 82, 0.3)',
+                        px: 1.5,
+                        py: 0.5,
+                        fontSize: '0.875rem',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'rgba(0, 61, 82, 0.06)',
                         },
                       }}
                       variant="contained"

@@ -128,6 +128,7 @@ export const generateMockBookings = (rooms: Room[]): Booking[] => {
           organizer: 'Team Lead',
           start,
           end,
+          status: 'approved',
           createdAt: format(addDays(day, -2), "yyyy-MM-dd'T'HH:mm:ss"),
         });
       }
@@ -143,6 +144,7 @@ export const generateMockBookings = (rooms: Room[]): Booking[] => {
           organizer: 'Sales Team',
           start,
           end,
+          status: 'approved',
           createdAt: format(addDays(day, -3), "yyyy-MM-dd'T'HH:mm:ss"),
         });
       }
@@ -158,6 +160,7 @@ export const generateMockBookings = (rooms: Room[]): Booking[] => {
           organizer: 'HR Department',
           start,
           end,
+          status: 'approved',
           createdAt: format(addDays(day, -5), "yyyy-MM-dd'T'HH:mm:ss"),
         });
       }
@@ -173,6 +176,7 @@ export const generateMockBookings = (rooms: Room[]): Booking[] => {
           organizer: 'Product Owner',
           start,
           end,
+          status: 'approved',
           createdAt: format(addDays(day, -1), "yyyy-MM-dd'T'HH:mm:ss"),
         });
       }
@@ -188,6 +192,7 @@ export const generateMockBookings = (rooms: Room[]): Booking[] => {
           organizer: 'Department Manager',
           start,
           end,
+          status: 'approved',
           createdAt: format(addDays(day, -1), "yyyy-MM-dd'T'HH:mm:ss"),
         });
       }
@@ -209,6 +214,7 @@ export const generateMockBookings = (rooms: Room[]): Booking[] => {
       organizer: 'Training Coordinator',
       start,
       end,
+    status: 'approved',
       createdAt: format(addDays(randomDay, -7), "yyyy-MM-dd'T'HH:mm:ss"),
     });
   }
@@ -229,6 +235,7 @@ export const generateMockBookings = (rooms: Room[]): Booking[] => {
       organizer: 'Test User',
       start,
       end,
+    status: 'approved',
       createdAt: format(addHours(now, -2), "yyyy-MM-dd'T'HH:mm:ss"),
     });
   }

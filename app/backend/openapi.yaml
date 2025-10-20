@@ -1,0 +1,355 @@
+openapi: 3.0.3
+info:
+  title: FMRB API
+  version: 1.0.0
+  description: Meeting Room Booking System API (Rooms, Bookings, Approval, Auth, Analytics)
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local
+tags:
+  - name: Auth
+  - name: Rooms
+  - name: Bookings
+  - name: Analytics
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      required: [id, email, name, role]
+      properties:
+        id: { type: string, example: "1" }
+        email: { type: string, format: email, example: "user@example.com" }
+        name: { type: string, example: "User Name" }
+        role:
+          type: string
+          enum: [user, approval, admin]
+          example: user
+    AuthResponse:
+      type: object
+      required: [user, accessToken, refreshToken]
+      properties:
+        user: { $ref: '#/components/schemas/User' }
+        accessToken: { type: string }
+        refreshToken: { type: string }
+    Room:
+      type: object
+      required: [id, name, location, capacity, isActive, workHours]
+      properties:
+        id: { type: string, example: "1" }
+        name: { type: string }
+        location: { type: string }
+        capacity: { type: integer }
+        isActive: { type: boolean }
+        workHours:
+          type: object
+          required: [start, end]
+          properties:
+            start: { type: string, example: "08:00" }
+            end: { type: string, example: "20:00" }
+        amenities:
+          type: array
+          items: { type: string }
+    Booking:
+      type: object
+      required: [id, roomId, title, start, end, status, createdAt]
+      properties:
+        id: { type: string, example: "5" }
+        roomId: { type: string, example: "1" }
+        userId: { type: string, nullable: true, example: "3" }
+        title: { type: string }
+        organizer: { type: string, nullable: true }
+        start: { type: string, format: date-time }
+        end: { type: string, format: date-time }
+        status:
+          type: string
+          enum: [pending, approved, declined]
+          example: pending
+        createdAt: { type: string, format: date-time }
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 6 }
+                name: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout (confirm)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  timestamp: { type: string }
+  /auth/users/{userId}/role:
+    put:
+      tags: [Auth]
+      summary: Update user role (admin only)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role: { type: string, enum: [user, approval, admin] }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+        '403': { description: Forbidden }
+  /rooms:
+    get:
+      tags: [Rooms]
+      summary: List rooms
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Room' }
+    post:
+      tags: [Rooms]
+      summary: Create room
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Room' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Room' } } } }
+  /rooms/{id}:
+    get:
+      tags: [Rooms]
+      summary: Get room by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Room' } } } }
+        '404': { description: Not Found }
+    put:
+      tags: [Rooms]
+      summary: Update room
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Room' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Room' } } } }
+    delete:
+      tags: [Rooms]
+      summary: Delete room (admin only)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: No Content }
+  /bookings:
+    get:
+      tags: [Bookings]
+      summary: List bookings
+      parameters:
+        - in: query
+          name: roomId
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string, enum: [pending, approved, declined] }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Booking' }
+    post:
+      tags: [Bookings]
+      summary: Create booking (public)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roomId, title, start, end]
+              properties:
+                roomId: { type: string }
+                title: { type: string }
+                organizer: { type: string }
+                start: { type: string, format: date-time }
+                end: { type: string, format: date-time }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Booking' } } } }
+        '409': { description: Conflict }
+  /bookings/{id}:
+    get:
+      tags: [Bookings]
+      summary: Get booking by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Booking' } } } }
+        '404': { description: Not Found }
+    put:
+      tags: [Bookings]
+      summary: Update booking (public demo)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                organizer: { type: string }
+                start: { type: string, format: date-time }
+                end: { type: string, format: date-time }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Booking' } } } }
+    delete:
+      tags: [Bookings]
+      summary: Delete booking (public demo)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: No Content }
+  /bookings/{id}/approve:
+    patch:
+      tags: [Bookings]
+      summary: Approve booking (approval/admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Booking' } } } }
+        '403': { description: Forbidden }
+  /bookings/{id}/decline:
+    patch:
+      tags: [Bookings]
+      summary: Decline booking (approval/admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Booking' } } } }
+        '403': { description: Forbidden }
+  /analytics/summary:
+    get:
+      tags: [Analytics]
+      summary: Analytics summary
+      parameters:
+        - in: query
+          name: startDate
+          required: true
+          schema: { type: string, example: '2024-10-06' }
+        - in: query
+          name: endDate
+          required: true
+          schema: { type: string, example: '2024-10-12' }
+        - in: query
+          name: roomId
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+

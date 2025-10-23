@@ -115,7 +115,13 @@
             },
             "description": "Register new user. Token automatically saved to collection variables."
           },
-          "response": []
+          "response": [
+            {
+              "code": 201,
+              "name": "Created",
+              "body": "{\n  \"user\": {\n    \"id\": \"3\",\n    \"email\": \"approver@example.com\",\n    \"name\": \"Approver One\",\n    \"role\": \"user\"\n  },\n  \"accessToken\": \"<jwt>\",\n  \"refreshToken\": \"<jwt>\"\n}"
+            }
+          ]
         },
         {
           "name": "Login User",
@@ -159,7 +165,13 @@
             },
             "description": "Login with credentials. Token automatically saved."
           },
-          "response": []
+          "response": [
+            {
+              "code": 200,
+              "name": "OK",
+              "body": "{\n  \"user\": {\n    \"id\": \"1\",\n    \"email\": \"Youssef@admin.com\",\n    \"name\": \"Youssef\",\n    \"role\": \"admin\"\n  },\n  \"accessToken\": \"<jwt>\",\n  \"refreshToken\": \"<jwt>\"\n}"
+            }
+          ]
         },
         {
           "name": "Logout User",
@@ -191,7 +203,7 @@
           "response": []
         },
         {
-          "name": "Update User Role (Make Admin)",
+          "name": "Update User Role (Make Admin/Approval)",
           "event": [
             {
               "listen": "test",
@@ -229,9 +241,15 @@
               "host": ["{{baseUrl}}"],
               "path": ["auth", "users", "{{userId}}", "role"]
             },
-            "description": "Update user role to admin. Uses {{userId}} from login/register. IMPORTANT: Logout and login again after this!"
+            "description": "Update user role to admin or approval. Uses {{userId}} from login/register. IMPORTANT: Logout and login again after this!"
           },
-          "response": []
+          "response": [
+            {
+              "code": 200,
+              "name": "OK",
+              "body": "{\n  \"message\": \"Logged out successfully\",\n  \"timestamp\": \"2025-10-20T10:49:33.000Z\"\n}"
+            }
+          ]
         }
       ],
       "description": "User registration and login. Tokens are auto-saved after login!"
@@ -372,6 +390,73 @@
           },
           "response": []
         },
+          {
+            "name": "Get Pending Bookings (approval/admin)",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{baseUrl}}/bookings?status=pending",
+                "host": ["{{baseUrl}}"],
+                "path": ["bookings"],
+                "query": [
+                  { "key": "status", "value": "pending" }
+                ]
+              },
+              "description": "List all pending bookings. Requires approval/admin token."
+            },
+          "response": [
+            {
+              "code": 200,
+              "name": "OK",
+              "body": "[\n  {\n    \"id\": \"5\",\n    \"roomId\": \"1\",\n    \"title\": \"Test Pending Meeting\",\n    \"organizer\": \"Guest\",\n    \"start\": \"2025-10-21T10:00:00.000Z\",\n    \"end\": \"2025-10-21T11:00:00.000Z\",\n    \"status\": \"pending\",\n    \"createdAt\": \"2025-10-20T10:49:33.000Z\"\n  }\n]"
+            }
+          ]
+          },
+          {
+            "name": "Approve Booking (approval/admin)",
+            "request": {
+              "method": "PATCH",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/bookings/{{bookingId}}/approve",
+                "host": ["{{baseUrl}}"],
+                "path": ["bookings", "{{bookingId}}", "approve"]
+              },
+              "description": "Approve a pending booking by ID."
+            },
+          "response": [
+            {
+              "code": 200,
+              "name": "OK",
+              "body": "{\n  \"id\": \"5\",\n  \"roomId\": \"1\",\n  \"title\": \"Test Pending Meeting\",\n  \"organizer\": \"Guest\",\n  \"start\": \"2025-10-21T10:00:00.000Z\",\n  \"end\": \"2025-10-21T11:00:00.000Z\",\n  \"status\": \"approved\",\n  \"createdAt\": \"2025-10-20T10:49:33.000Z\"\n}"
+            }
+          ]
+          },
+          {
+            "name": "Decline Booking (approval/admin)",
+            "request": {
+              "method": "PATCH",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/bookings/{{bookingId}}/decline",
+                "host": ["{{baseUrl}}"],
+                "path": ["bookings", "{{bookingId}}", "decline"]
+              },
+              "description": "Decline a pending booking by ID."
+            },
+          "response": [
+            {
+              "code": 200,
+              "name": "OK",
+              "body": "{\n  \"id\": \"5\",\n  \"roomId\": \"1\",\n  \"title\": \"Test Pending Meeting\",\n  \"organizer\": \"Guest\",\n  \"start\": \"2025-10-21T10:00:00.000Z\",\n  \"end\": \"2025-10-21T11:00:00.000Z\",\n  \"status\": \"declined\",\n  \"createdAt\": \"2025-10-20T10:49:33.000Z\"\n}"
+            }
+          ]
+          },
         {
           "name": "Get Bookings by Room",
           "request": {
@@ -453,7 +538,18 @@
             },
             "description": "Create booking. Automatically checks for overlaps!"
           },
-          "response": []
+          "response": [
+            {
+              "code": 201,
+              "name": "Created",
+              "body": "{\n  \"id\": \"5\",\n  \"roomId\": \"1\",\n  \"title\": \"Team Standup\",\n  \"organizer\": \"John Doe\",\n  \"start\": \"2024-10-15T09:00:00.000Z\",\n  \"end\": \"2024-10-15T09:30:00.000Z\",\n  \"status\": \"pending\",\n  \"createdAt\": \"2024-10-14T10:00:00.000Z\"\n}"
+            },
+            {
+              "code": 409,
+              "name": "Conflict",
+              "body": "{\n  \"error\": \"Time slot is already booked\"\n}"
+            }
+          ]
         },
         {
           "name": "Update Booking",
@@ -476,7 +572,13 @@
             },
             "description": "Update booking"
           },
-          "response": []
+          "response": [
+            {
+              "code": 200,
+              "name": "OK",
+              "body": "{\n  \"id\": \"5\",\n  \"roomId\": \"1\",\n  \"title\": \"Updated Meeting Title\",\n  \"organizer\": \"John Doe\",\n  \"start\": \"2024-10-15T10:00:00.000Z\",\n  \"end\": \"2024-10-15T11:00:00.000Z\",\n  \"status\": \"pending\",\n  \"createdAt\": \"2024-10-14T10:00:00.000Z\"\n}"
+            }
+          ]
         },
         {
           "name": "Delete Booking",

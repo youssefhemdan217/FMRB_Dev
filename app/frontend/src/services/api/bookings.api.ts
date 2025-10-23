@@ -13,6 +13,7 @@ export interface Booking {
   organizer?: string;
   start: string; // ISO date string
   end: string;   // ISO date string
+  status: 'pending' | 'approved' | 'declined';
   createdAt: string; // ISO date string
 }
 
@@ -29,6 +30,7 @@ export interface UpdateBookingDTO {
   organizer?: string;
   start?: string;
   end?: string;
+  status?: 'pending' | 'approved' | 'declined';
 }
 
 export const bookingsApi = {
@@ -36,9 +38,7 @@ export const bookingsApi = {
    * Get all bookings
    */
   getAll: async (): Promise<Booking[]> => {
-    const response = await apiClient.get<Booking[]>(
-      serverConfig.endpoints.bookings.base
-    );
+    const response = await apiClient.get<Booking[]>(serverConfig.endpoints.bookings.base);
     return response.data;
   },
 
@@ -81,6 +81,24 @@ export const bookingsApi = {
       serverConfig.endpoints.bookings.byId(id),
       data
     );
+    return response.data;
+  },
+
+  // List pending bookings (requires auth)
+  getPending: async (): Promise<Booking[]> => {
+    const response = await apiClient.get<Booking[]>(`${serverConfig.endpoints.bookings.base}?status=pending`);
+    return response.data;
+  },
+
+  // Approve booking (requires approval/admin auth)
+  approve: async (id: string): Promise<Booking> => {
+    const response = await apiClient.patch<Booking>(`${serverConfig.endpoints.bookings.byId(id)}/approve`);
+    return response.data;
+  },
+
+  // Decline booking (requires approval/admin auth)
+  decline: async (id: string): Promise<Booking> => {
+    const response = await apiClient.patch<Booking>(`${serverConfig.endpoints.bookings.byId(id)}/decline`);
     return response.data;
   },
 

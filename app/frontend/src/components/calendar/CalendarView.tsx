@@ -34,9 +34,18 @@ export const CalendarView = ({
     end: booking.end,
     extendedProps: {
       organizer: booking.organizer,
+      status: booking.status,
     },
-    backgroundColor: theme.palette.primary.main,
-    borderColor: theme.palette.primary.dark,
+    backgroundColor: booking.status === 'approved'
+      ? theme.palette.success.main
+      : booking.status === 'pending'
+        ? theme.palette.warning.main
+        : theme.palette.error.main,
+    borderColor: booking.status === 'approved'
+      ? theme.palette.success.dark
+      : booking.status === 'pending'
+        ? theme.palette.warning.dark
+        : theme.palette.error.dark,
   }));
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
@@ -183,11 +192,6 @@ export const CalendarView = ({
             <Box sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
               {eventInfo.event.title}
             </Box>
-            {eventInfo.event.extendedProps.organizer && (
-              <Box sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' }, opacity: 0.9 }}>
-                {eventInfo.event.extendedProps.organizer}
-              </Box>
-            )}
           </Box>
         )}
       />

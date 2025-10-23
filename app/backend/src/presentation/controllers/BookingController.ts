@@ -14,7 +14,7 @@ export class BookingController {
 
   getAll = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const { roomId } = req.query;
+      const { roomId, status } = req.query as { roomId?: string; status?: string };
       
       let bookings;
       if (roomId) {
@@ -27,14 +27,18 @@ export class BookingController {
       const response = bookings.map(booking => ({
         id: booking.id,
         roomId: booking.roomId,
+        userId: booking.userId,
         title: booking.title,
         organizer: booking.organizer,
         start: booking.start.toISOString(),
         end: booking.end.toISOString(),
+        status: booking.status,
         createdAt: booking.createdAt.toISOString(),
       }));
 
-      res.json(response);
+      // Optional filter by status on server side to support /bookings?status=pending
+      const filtered = status ? response.filter(b => b.status === status) : response;
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -49,10 +53,12 @@ export class BookingController {
       res.json({
         id: booking.id,
         roomId: booking.roomId,
+        userId: booking.userId,
         title: booking.title,
         organizer: booking.organizer,
         start: booking.start.toISOString(),
         end: booking.end.toISOString(),
+        status: booking.status,
         createdAt: booking.createdAt.toISOString(),
       });
     } catch (error) {
@@ -71,6 +77,7 @@ export class BookingController {
         organizer: booking.organizer,
         start: booking.start.toISOString(),
         end: booking.end.toISOString(),
+        status: booking.status,
         createdAt: booking.createdAt.toISOString(),
       });
     } catch (error) {
@@ -89,6 +96,7 @@ export class BookingController {
         organizer: booking.organizer,
         start: booking.start.toISOString(),
         end: booking.end.toISOString(),
+        status: booking.status,
         createdAt: booking.createdAt.toISOString(),
       });
     } catch (error) {

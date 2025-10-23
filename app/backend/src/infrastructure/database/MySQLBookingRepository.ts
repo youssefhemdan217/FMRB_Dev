@@ -7,9 +7,9 @@ export class MySQLBookingRepository implements IBookingRepository {
 
   async create(data: BookingCreateData): Promise<Booking> {
     const [result] = await this.pool.execute(
-      `INSERT INTO mb_bookings (room_id, title, organizer, start, end) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [data.roomId, data.title, data.organizer || null, data.start, data.end]
+      `INSERT INTO mb_bookings (room_id, title, organizer, start, end, status) 
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [data.roomId, data.title, data.organizer || null, data.start, data.end, data.status || 'pending']
     );
 
     const insertId = (result as any).insertId;
@@ -51,7 +51,8 @@ export class MySQLBookingRepository implements IBookingRepository {
   }
 
   async findOverlapping(roomId: string, start: Date, end: Date, excludeId?: string): Promise<Booking[]> {
-    let sql = `SELECT * FROM mb_bookings WHERE room_id = ? AND start < ? AND end > ?`;
+    // Block overlaps against pending and approved bookings only
+    let sql = `SELECT * FROM mb_bookings WHERE room_id = ? AND start < ? AND end > ? AND status IN ('pending','approved')`;
     const params: any[] = [roomId, end, start];
 
     if (excludeId) {
@@ -83,6 +84,10 @@ export class MySQLBookingRepository implements IBookingRepository {
       updates.push('end = ?');
       values.push(data.end);
     }
+    if (data.status !== undefined) {
+      updates.push('status = ?');
+      values.push(data.status);
+    }
 
     values.push(id);
 
@@ -105,10 +110,12 @@ export class MySQLBookingRepository implements IBookingRepository {
     return {
       id: row.id.toString(),
       roomId: row.room_id.toString(),
+      userId: row.user_id ? row.user_id.toString() : undefined,
       title: row.title,
       organizer: row.organizer || undefined,
       start: new Date(row.start),
       end: new Date(row.end),
+      status: row.status as any,
       createdAt: new Date(row.created_at),
     };
   }

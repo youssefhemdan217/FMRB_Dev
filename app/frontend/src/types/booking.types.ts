@@ -5,6 +5,7 @@ export interface Booking {
   organizer?: string;
   start: string; // ISO 8601
   end: string; // ISO 8601
+  status: 'pending' | 'approved' | 'declined';
   createdAt: string; // ISO 8601
 }
 

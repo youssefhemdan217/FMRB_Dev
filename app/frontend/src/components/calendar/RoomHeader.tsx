@@ -12,12 +12,12 @@ export interface RoomHeaderProps {
 
 export const RoomHeader = ({ room, status, statusMessage }: RoomHeaderProps) => {
   return (
-    <Box sx={{ mb: { xs: 3, md: 4 } }}>
+    <Box sx={{ mb: { xs: 2, md: 2.5 } }}>
       {!room.isActive && (
         <Alert 
           severity="warning" 
           sx={{ 
-            mb: { xs: 2, md: 3 },
+            mb: { xs: 1.5, md: 2 },
             borderRadius: { xs: 2, md: 3 },
             border: '2px solid',
             borderColor: 'warning.light',
@@ -33,7 +33,7 @@ export const RoomHeader = ({ room, status, statusMessage }: RoomHeaderProps) => 
 
       <Box 
         sx={{ 
-          p: { xs: 2.5, sm: 3, md: 4 },
+          p: { xs: 1.5, sm: 2, md: 2.5 },
           borderRadius: { xs: 3, md: 4 },
           backgroundColor: 'rgba(0, 61, 82, 0.03)',
           border: '1px solid',
@@ -45,7 +45,7 @@ export const RoomHeader = ({ room, status, statusMessage }: RoomHeaderProps) => 
           flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'space-between', 
           alignItems: { xs: 'stretch', sm: 'start' }, 
-          mb: { xs: 2, md: 3 },
+          mb: { xs: 1.5, md: 2 },
           gap: { xs: 2, sm: 0 },
         }}>
           <Box sx={{ flex: 1 }}>
@@ -54,7 +54,7 @@ export const RoomHeader = ({ room, status, statusMessage }: RoomHeaderProps) => 
               component="h1" 
               sx={{ 
                 fontWeight: 800,
-                mb: { xs: 1.5, md: 2 },
+                mb: { xs: 1, md: 1.5 },
                 color: '#003D52',
                 fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
               }}
@@ -113,7 +113,7 @@ export const RoomHeader = ({ room, status, statusMessage }: RoomHeaderProps) => 
             <Typography 
               variant="body1" 
               sx={{ 
-                mt: 1.5,
+                mt: 1,
                 fontWeight: 600,
                 color: 'text.secondary',
                 fontSize: { xs: '0.875rem', sm: '1rem' },
@@ -124,12 +124,12 @@ export const RoomHeader = ({ room, status, statusMessage }: RoomHeaderProps) => 
           </Box>
         </Box>
 
-        {room.amenities && room.amenities.length > 0 && (
+        {/* {room.amenities && room.amenities.length > 0 && (
           <Box>
             <Typography 
               variant="subtitle2" 
               sx={{ 
-                mb: 1.5,
+                mb: 1,
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
@@ -171,7 +171,7 @@ export const RoomHeader = ({ room, status, statusMessage }: RoomHeaderProps) => 
               ))}
             </Box>
           </Box>
-        )}
+        )} */}
       </Box>
     </Box>
   );

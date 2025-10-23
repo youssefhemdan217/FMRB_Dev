@@ -130,7 +130,7 @@ export const BookingModal = () => {
         if (createBookingAsync.fulfilled.match(result)) {
           dispatch(
             showToast({
-              message: 'Booking created successfully',
+              message: 'Booking created successfully — Pending approval',
               type: 'success',
             })
           );

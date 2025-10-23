@@ -11,16 +11,18 @@ export interface UpdateBookingDTO {
   organizer?: string;
   start?: string;
   end?: string;
+  status?: 'pending' | 'approved' | 'declined';
 }
 
 export interface BookingResponseDTO {
   id: string;
   roomId: string;
-  userId: string;
+  userId?: string;
   title: string;
   organizer?: string;
   start: string;
   end: string;
+  status: 'pending' | 'approved' | 'declined';
   createdAt: string;
 }
 

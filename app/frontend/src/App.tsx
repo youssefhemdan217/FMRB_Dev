@@ -49,7 +49,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/rooms" replace />} />
+          <Route index element={<Navigate to="/rooms/9" replace />} />
           <Route path="rooms" element={<RoomsPage />} />
           <Route path="rooms/:id" element={<RoomDetailPage />} />
           <Route path="rooms/manage" element={<RoomManagementPage />} />

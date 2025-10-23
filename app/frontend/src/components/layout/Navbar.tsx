@@ -131,7 +131,7 @@ export const Navbar = () => {
           }} 
         />
         <Typography variant="h6" sx={{ color: '#003D52', fontWeight: 700 }}>
-          BookMeeting
+          FABSI Meeting Room
         </Typography>
       </Box>
       <List>
@@ -253,7 +253,7 @@ export const Navbar = () => {
               transition: 'opacity 0.2s',
             }}
           >
-            BookMeeting
+            FABSI Meeting Room
           </Typography>
 
           {!isMobile && (

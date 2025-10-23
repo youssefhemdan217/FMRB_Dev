@@ -37,7 +37,7 @@ export const LoginPage = () => {
   const { isLoading, error, isAuthenticated } = useAppSelector((state) => state.auth);
 
   // Get the page user was trying to access before being redirected to login
-  const from = (location.state as any)?.from?.pathname || '/rooms';
+  const from = (location.state as any)?.from?.pathname || '/rooms/9';
 
   const [formData, setFormData] = useState({
     email: '',

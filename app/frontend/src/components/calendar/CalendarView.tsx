@@ -1,5 +1,6 @@
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 import { Box, useTheme, Fab } from '@mui/material';
@@ -159,19 +160,43 @@ export const CalendarView = ({
         '& .fc-day-today': {
           backgroundColor: 'rgba(0, 61, 82, 0.03) !important',
         },
+        '& .fc-daygrid-day': {
+          borderColor: 'grey.100',
+        },
+        '& .fc-daygrid-day-number': {
+          padding: { xs: '4px 6px', sm: '6px 8px' },
+          fontSize: { xs: '0.8rem', sm: '0.9rem' },
+          fontWeight: 500,
+          color: 'text.primary',
+        },
+        '& .fc-daygrid-event': {
+          fontSize: { xs: '0.7rem', sm: '0.8rem' },
+          padding: { xs: '2px 4px', sm: '3px 6px' },
+          borderRadius: { xs: '4px', sm: '6px' },
+          margin: { xs: '1px', sm: '2px' },
+          backgroundColor: theme.palette.success.main + ' !important',
+          borderColor: theme.palette.success.dark + ' !important',
+          color: 'white !important',
+          '&:hover': {
+            backgroundColor: theme.palette.success.dark + ' !important',
+            transform: 'scale(1.02)',
+            boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
+          },
+        },
         opacity: disabled ? 0.6 : 1,
         pointerEvents: disabled ? 'none' : 'auto',
       }}
     >
       <FullCalendar
         ref={calendarRef}
-        plugins={[timeGridPlugin, interactionPlugin]}
+        plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'timeGridWeek,timeGridDay',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
+        titleFormat={{ year: 'numeric', month: 'long' }}
         events={events}
         editable={false}
         selectable={!disabled}

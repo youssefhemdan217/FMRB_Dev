@@ -1,12 +1,10 @@
-import { Container, Box, Button, Alert } from '@mui/material';
+import { Container, Box, Button, Alert, Typography } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAppSelector, useAppDispatch } from '../store';
 import { selectRoomById, selectBookingsByRoomId } from '../store/selectors/roomSelectors';
 import { openBookingModal, showToast } from '../store/slices/uiSlice';
-import { RoomHeader } from '../components/calendar/RoomHeader';
 import { CalendarView } from '../components/calendar/CalendarView';
-import { useRoomStatus } from '../hooks/useRoomStatus';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Booking } from '../types/booking.types';
 import { useMemo, useEffect, useRef, useState } from 'react';
@@ -103,7 +101,8 @@ export const RoomDetailPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id, navigate]);
 
-  const { status, statusMessage } = useRoomStatus(room, bookings);
+  // Note: useRoomStatus hook is available if needed for future room status display
+  // const { status, statusMessage } = useRoomStatus(room, bookings);
 
   if (!id) {
     return (
@@ -207,18 +206,47 @@ export const RoomDetailPage = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 1, sm: 1.5, md: 2 }, px: { xs: 1, sm: 2 } }}>
-      <Box sx={{ mb: { xs: 1, sm: 1 } }}>
+      {/* Room Header with Title and Back Button */}
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          mb: { xs: 2, sm: 3 },
+          flexWrap: 'wrap',
+          gap: 1
+        }}
+      >
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate('/rooms')}
-          sx={{ mb: { xs: 1, sm: 2 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}
+          sx={{ 
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            minWidth: 'auto'
+          }}
           size="small"
         >
           Back to Rooms
         </Button>
+        
+        <Typography 
+          variant="h4" 
+          component="h1"
+          sx={{ 
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+            fontWeight: 600,
+            color: 'primary.main',
+            textAlign: 'center',
+            flex: 1,
+            minWidth: 0
+          }}
+        >
+          {room.name}
+        </Typography>
+        
+        {/* Empty div for spacing to center the title */}
+        <Box sx={{ width: { xs: 'auto', sm: '120px' } }} />
       </Box>
-
-      <RoomHeader room={room} status={status} statusMessage={statusMessage} />
 
       <CalendarView
         bookings={bookings}

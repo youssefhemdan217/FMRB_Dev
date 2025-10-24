@@ -7,6 +7,7 @@ async function setupDatabase() {
     console.log('🔧 Setting up database...');
     
     // First, connect without specifying a database to create it
+  
     const connection = await mysql.createConnection({
       host: 'localhost',
       user: 'root',
@@ -15,8 +16,8 @@ async function setupDatabase() {
     });
 
     // Create the database
-    await connection.execute('CREATE DATABASE IF NOT EXISTS FabsiMB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
-    console.log('✅ Database FabsiMB created/verified');
+    await connection.execute('CREATE DATABASE IF NOT EXISTS fmrb_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    console.log('✅ Database fmrb_db created/verified');
 
     // Close connection and reconnect to the new database
     await connection.end();
@@ -25,7 +26,7 @@ async function setupDatabase() {
       host: 'localhost',
       user: 'root',
       password: '1234',
-      database: 'FabsiMB',
+      database: 'fmrb_db',
       port: 3306
     });
 

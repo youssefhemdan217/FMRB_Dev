@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { store } from './store';
+import { useEffect } from 'react';
+import { store, useAppDispatch } from './store';
 import { theme } from './theme';
 import { AppLayout } from './components/layout/AppLayout';
 import { RoomsPage } from './pages/RoomsPage';
@@ -17,6 +18,18 @@ import { BookingModal } from './components/modals/BookingModal';
 import { Toast } from './components/common/Toast';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { initializeAuth } from './store/slices/authSlice';
+
+// Component to initialize auth state
+function AuthInitializer() {
+  const dispatch = useAppDispatch();
+  
+  useEffect(() => {
+    dispatch(initializeAuth());
+  }, [dispatch]);
+  
+  return null;
+}
 
 // Component inside Router context that handles data loading
 function DataLoader() {
@@ -32,6 +45,9 @@ function AppContent() {
         v7_relativeSplatPath: true,
       }}
     >
+      {/* Initialize auth state */}
+      <AuthInitializer />
+      
       {/* Data loader inside Router context */}
       <DataLoader />
       

@@ -10,7 +10,7 @@ async function addUsers() {
       host: 'localhost',
       user: 'root',
       password: '1234',
-      database: 'FabsiMB',
+      database: 'fmrb_db',
       port: 3306
     });
 

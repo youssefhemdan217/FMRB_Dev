@@ -37,10 +37,10 @@ import { createRoomRoutes } from './presentation/routes/room.routes';
 import { createBookingRoutes } from './presentation/routes/booking.routes';
 import { createAnalyticsRoutes } from './presentation/routes/analytics.routes';
 import { errorHandler } from './presentation/middlewares/errorHandler';
-import swaggerUi from 'swagger-ui-express';
-import fs from 'fs';
-import path from 'path';
-import YAML from 'yaml';
+// import swaggerUi from 'swagger-ui-express';
+// import fs from 'fs';
+// import path from 'path';
+// import YAML from 'yaml';
 
 /**
  * DEPENDENCY INJECTION CONTAINER
@@ -150,7 +150,8 @@ const createApp = (container: DIContainer): Application => {
   app.use(`${apiPrefix}/bookings`, createBookingRoutes(container.bookingController, container.tokenService));
   app.use(`${apiPrefix}/analytics`, createAnalyticsRoutes(container.analyticsController));
 
-  // Swagger UI (local docs)
+  // Swagger UI (local docs) - Temporarily disabled
+  /*
   try {
     const openapiPath = path.resolve(__dirname, '../openapi.yaml');
     if (fs.existsSync(openapiPath)) {
@@ -162,6 +163,7 @@ const createApp = (container: DIContainer): Application => {
   } catch (err) {
     console.warn('⚠️ Failed to load Swagger UI:', err);
   }
+  */
 
   // 404 Handler
   app.use((_req, res) => {

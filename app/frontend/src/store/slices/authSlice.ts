@@ -16,8 +16,8 @@ export interface AuthState {
 }
 
 const initialState: AuthState = {
-  user: authApi.getCurrentUser(),
-  isAuthenticated: authApi.isAuthenticated(),
+  user: null,
+  isAuthenticated: false,
   isLoading: false,
   error: null,
 };
@@ -87,6 +87,22 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isAuthenticated = true;
     },
+    initializeAuth: (state) => {
+      // Re-check authentication state and clear invalid data
+      const isAuth = authApi.isAuthenticated();
+      const user = authApi.getCurrentUser();
+      
+      if (isAuth && user) {
+        state.user = user;
+        state.isAuthenticated = true;
+      } else {
+        // Clear invalid state
+        authApi.clearAuth();
+        state.user = null;
+        state.isAuthenticated = false;
+      }
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     // Register
@@ -136,6 +152,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logoutLocal, clearError, setUser } = authSlice.actions;
+export const { logoutLocal, clearError, setUser, initializeAuth } = authSlice.actions;
 export default authSlice.reducer;
 

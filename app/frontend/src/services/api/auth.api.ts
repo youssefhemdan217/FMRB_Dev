@@ -84,7 +84,28 @@ export const authApi = {
    */
   isAuthenticated: (): boolean => {
     const token = localStorage.getItem(serverConfig.token.accessTokenKey);
-    return !!token;
+    const user = localStorage.getItem(serverConfig.token.userKey);
+    
+    // Both token and user must exist
+    if (!token || !user) {
+      // Clear any partial auth data
+      localStorage.removeItem(serverConfig.token.accessTokenKey);
+      localStorage.removeItem(serverConfig.token.refreshTokenKey);
+      localStorage.removeItem(serverConfig.token.userKey);
+      return false;
+    }
+    
+    try {
+      // Validate user data can be parsed
+      JSON.parse(user);
+      return true;
+    } catch {
+      // Clear invalid data
+      localStorage.removeItem(serverConfig.token.accessTokenKey);
+      localStorage.removeItem(serverConfig.token.refreshTokenKey);
+      localStorage.removeItem(serverConfig.token.userKey);
+      return false;
+    }
   },
 
   /**
@@ -92,6 +113,15 @@ export const authApi = {
    */
   getAccessToken: (): string | null => {
     return localStorage.getItem(serverConfig.token.accessTokenKey);
+  },
+
+  /**
+   * Clear all authentication data
+   */
+  clearAuth: (): void => {
+    localStorage.removeItem(serverConfig.token.accessTokenKey);
+    localStorage.removeItem(serverConfig.token.refreshTokenKey);
+    localStorage.removeItem(serverConfig.token.userKey);
   },
 };
 

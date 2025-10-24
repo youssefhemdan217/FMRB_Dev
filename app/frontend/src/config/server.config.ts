@@ -5,10 +5,11 @@
 
 export const serverConfig = {
   // Base API URL
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://spmwsm02x3zd.saipemnet.saipem.intranet/MeetingBookingApi/api/v1',
   
   // Backend server URL (for WebSocket connections, etc.)
-  serverURL: import.meta.env.VITE_SERVER_URL || 'http://localhost:3000',
+  //serverURL: import.meta.env.VITE_SERVER_URL || 'http://localhost:3000',
+  serverURL: import.meta.env.VITE_SERVER_URL || 'http://spmwsm02x3zd.saipemnet.saipem.intranet/MeetingBookingApi',
   
   // API endpoints
   endpoints: {

@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: Meeting Room Booking System API (Rooms, Bookings, Approval, Auth, Analytics)
 servers:
-  - url: http://localhost:3000/api/v1
+  - url: http://spmwsm02x3zd.saipemnet.saipem.intranet/MeetingBookingApi/api/v1
     description: Local
 tags:
   - name: Auth

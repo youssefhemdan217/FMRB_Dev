@@ -12,6 +12,8 @@ build/
 .env
 .env.local
 .env.*.local
+# Keep production template for deployment reference
+!.env.production
 
 # IDE
 .vscode/

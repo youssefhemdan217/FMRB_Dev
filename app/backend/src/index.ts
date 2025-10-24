@@ -120,7 +120,7 @@ const createApp = (container: DIContainer): Application => {
   // Security & Performance Middleware
   app.use(helmet());
   app.use(cors({
-    origin: serverConfig.corsOrigin,
+    origin: serverConfig.corsOrigin === '*' ? true : serverConfig.corsOrigin,
     credentials: true,
   }));
   app.use(morgan('dev'));

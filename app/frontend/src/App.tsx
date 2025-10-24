@@ -19,6 +19,7 @@ import { Toast } from './components/common/Toast';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { initializeAuth } from './store/slices/authSlice';
+import { ROUTES } from './constants/routes';
 
 // Component to initialize auth state
 function AuthInitializer() {
@@ -40,6 +41,7 @@ function DataLoader() {
 function AppContent() {
   return (
     <BrowserRouter
+      basename="/MeetingBookingApp"
       future={{
         v7_startTransition: true,
         v7_relativeSplatPath: true,
@@ -53,25 +55,25 @@ function AppContent() {
       
       <Routes>
         {/* Auth Routes (Public) */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
         {/* App Routes (Protected) */}
         <Route
-          path="/"
+          path={ROUTES.ROOT}
           element={
             <ProtectedRoute>
               <AppLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/rooms/9" replace />} />
-          <Route path="rooms" element={<RoomsPage />} />
-          <Route path="rooms/:id" element={<RoomDetailPage />} />
-          <Route path="rooms/manage" element={<RoomManagementPage />} />
-          <Route path="analytics" element={<AnalyticsPage />} />
-          <Route path="approvals" element={<ApprovalPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+          <Route index element={<Navigate to={ROUTES.DEFAULT_ROOM} replace />} />
+          <Route path={ROUTES.ROOMS} element={<RoomsPage />} />
+          <Route path={ROUTES.ROOM_DETAIL()} element={<RoomDetailPage />} />
+          <Route path={ROUTES.ROOM_MANAGEMENT} element={<RoomManagementPage />} />
+          <Route path={ROUTES.ANALYTICS} element={<AnalyticsPage />} />
+          <Route path={ROUTES.APPROVALS} element={<ApprovalPage />} />
+          <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
         </Route>
       </Routes>
       

@@ -10,6 +10,7 @@ import { Booking } from '../types/booking.types';
 import { useMemo, useEffect, useRef, useState } from 'react';
 import { fetchBookingsByRoomId } from '../store/slices/bookingsSlice';
 import { fetchRoomById } from '../store/slices/roomsSlice';
+import { navigateTo } from '../constants/routes';
 
 export const RoomDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,9 @@ export const RoomDetailPage = () => {
   const hasFetchedRef = useRef<string | null>(null);
   // Initialize as true - we assume we're loading until proven otherwise
   const [isLoadingRoom, setIsLoadingRoom] = useState(true);
+  
+  // Navigation helper
+  const nav = navigateTo(navigate);
 
   // Memoize the selectors to avoid creating new ones on each render
   const roomSelector = useMemo(
@@ -71,7 +75,7 @@ export const RoomDetailPage = () => {
             message: roomResult.payload || 'Room not found',
             type: 'error',
           }));
-          setTimeout(() => navigate('/rooms'), 2000);
+          setTimeout(() => nav.rooms(), 2000);
           return;
         }
         
@@ -130,7 +134,7 @@ export const RoomDetailPage = () => {
         </Alert>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/rooms')}
+          onClick={() => nav.rooms()}
           variant="contained"
         >
           Back to Rooms
@@ -148,7 +152,7 @@ export const RoomDetailPage = () => {
         </Alert>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/rooms')}
+          onClick={() => nav.rooms()}
           variant="contained"
         >
           Back to Rooms
@@ -219,7 +223,7 @@ export const RoomDetailPage = () => {
       >
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/rooms')}
+          onClick={() => nav.rooms()}
           sx={{ 
             fontSize: { xs: '0.875rem', sm: '1rem' },
             minWidth: 'auto'

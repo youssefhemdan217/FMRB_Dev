@@ -30,11 +30,15 @@ import {
 import { useAppDispatch, useAppSelector } from '../store';
 import { register, clearError } from '../store/slices/authSlice';
 import { showToast } from '../store/slices/uiSlice';
+import { ROUTES, navigateTo } from '../constants/routes';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, error, isAuthenticated } = useAppSelector((state) => state.auth);
+  
+  // Navigation helper
+  const nav = navigateTo(navigate);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -52,7 +56,7 @@ export const RegisterPage = () => {
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    navigate('/rooms');
+    nav.rooms();
   }
 
   const validateForm = (): boolean => {
@@ -118,7 +122,7 @@ export const RegisterPage = () => {
           message: `Welcome, ${result.payload.user.name}! Your account has been created.`,
           type: 'success',
         }));
-        navigate('/rooms');
+        nav.rooms();
       } else {
         dispatch(showToast({
           message: result.payload || 'Registration failed',
@@ -441,7 +445,7 @@ export const RegisterPage = () => {
           Already have an account?{' '}
           <Box
             component={RouterLink}
-            to="/login"
+            to={ROUTES.LOGIN}
             sx={{
               color: 'white',
               fontWeight: 700,

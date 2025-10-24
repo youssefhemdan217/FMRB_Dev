@@ -13,6 +13,7 @@ import TableViewIcon from '@mui/icons-material/TableView';
 import { calculateRoomStatus } from '../utils/dateUtils';
 import { fetchRooms } from '../store/slices/roomsSlice';
 import { showToast } from '../store/slices/uiSlice';
+import { navigateTo } from '../constants/routes';
 
 type ViewMode = 'grid' | 'table';
 
@@ -23,6 +24,9 @@ export const RoomsPage = () => {
   const bookings = useAppSelector(selectAllBookings);
   const { loading } = useAppSelector((state) => state.rooms);
   const { filterRooms } = useRoomFilters();
+  
+  // Navigation helper
+  const nav = navigateTo(navigate);
   
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
@@ -59,7 +63,7 @@ export const RoomsPage = () => {
   const filteredRooms = filterRooms(rooms, roomStatuses);
 
   const handleRoomClick = (roomId: string) => {
-    navigate(`/rooms/${roomId}`);
+    nav.roomDetail(roomId);
   };
 
   // Show loading state

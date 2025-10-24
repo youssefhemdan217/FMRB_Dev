@@ -28,18 +28,19 @@ import { logout } from '../../store/slices/authSlice';
 import { showToast } from '../../store/slices/uiSlice';
 import { useConfirm } from '../../hooks/useConfirm';
 import { ConfirmDialog } from '../common/ConfirmDialog';
+import { ROUTES, navigateTo } from '../../constants/routes';
 
 const getAllNavItems = (role?: string) => {
   const isAdmin = role === 'admin';
   const isApproval = role === 'approval';
   return [
-    { label: 'Rooms', path: '/rooms' },
+    { label: 'Rooms', path: ROUTES.ROOMS },
     ...((isAdmin || isApproval) ? [
-      { label: 'Approval', path: '/approvals' },
+      { label: 'Approval', path: ROUTES.APPROVALS },
     ] : []),
     ...(isAdmin ? [
-      { label: 'Room Management', path: '/rooms/manage' },
-      { label: 'Analytics', path: '/analytics' },
+      { label: 'Room Management', path: ROUTES.ROOM_MANAGEMENT },
+      { label: 'Analytics', path: ROUTES.ANALYTICS },
     ] : []),
   ];
 };
@@ -54,6 +55,9 @@ export const Navbar = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
+  
+  // Navigation helper
+  const nav = navigateTo(navigate);
 
   // Filter navigation items based on user role
   const navItems = getAllNavItems(user?.role);
@@ -91,7 +95,7 @@ export const Navbar = () => {
           type: 'success',
         }));
         
-        navigate('/login');
+        nav.login();
       } catch (error) {
         // Even if API call fails, user is logged out locally
         dispatch(showToast({
@@ -99,14 +103,14 @@ export const Navbar = () => {
           type: 'success',
         }));
         
-        navigate('/login');
+        nav.login();
       }
     }
   };
 
   const isActivePath = (path: string) => {
-    if (path === '/rooms') {
-      return location.pathname === '/rooms';
+    if (path === ROUTES.ROOMS) {
+      return location.pathname === ROUTES.ROOMS;
     }
     return location.pathname.startsWith(path);
   };
@@ -239,7 +243,7 @@ export const Navbar = () => {
           <Typography
             variant="h6"
             component={Link}
-            to="/rooms"
+            to={ROUTES.ROOMS}
             sx={{
               flexGrow: 1,
               textDecoration: 'none',
@@ -360,7 +364,7 @@ export const Navbar = () => {
                   <>
                     <Button
                       component={Link}
-                      to="/login"
+                      to={ROUTES.LOGIN}
                       startIcon={<LoginIcon fontSize="small" />}
                       size="small"
                       sx={{
@@ -380,7 +384,7 @@ export const Navbar = () => {
                     </Button>
                     <Button
                       component={Link}
-                      to="/register"
+                      to={ROUTES.REGISTER}
                       startIcon={<PersonAddIcon fontSize="small" />}
                       size="small"
                       sx={{

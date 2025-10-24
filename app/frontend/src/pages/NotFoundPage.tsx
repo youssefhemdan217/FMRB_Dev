@@ -1,9 +1,11 @@
 import { Container, Typography, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { navigateTo } from '../constants/routes';
 
 export const NotFoundPage = () => {
   const navigate = useNavigate();
+  const nav = navigateTo(navigate);
 
   return (
     <Container maxWidth="sm">
@@ -31,7 +33,7 @@ export const NotFoundPage = () => {
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </Typography>
         
-        <Button variant="contained" size="large" onClick={() => navigate('/rooms')}>
+        <Button variant="contained" size="large" onClick={() => nav.rooms()}>
           Go to Rooms
         </Button>
       </Box>

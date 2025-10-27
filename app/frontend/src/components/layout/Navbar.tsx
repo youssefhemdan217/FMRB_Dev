@@ -29,6 +29,7 @@ import { showToast } from '../../store/slices/uiSlice';
 import { useConfirm } from '../../hooks/useConfirm';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { ROUTES, navigateTo } from '../../constants/routes';
+import logoImage from '/logo.png';
 
 const getAllNavItems = (role?: string) => {
   const isAdmin = role === 'admin';
@@ -125,10 +126,10 @@ export const Navbar = () => {
         gap: 1 
       }}>
         <img 
-          src="/logo.png" 
+          src={logoImage} 
           alt="Saipem Logo" 
           style={{ 
-            height: '40px', 
+            height: '50px', 
             width: 'auto',
             objectFit: 'contain',
             borderRadius: '8px'
@@ -229,7 +230,7 @@ export const Navbar = () => {
             }}
           >
             <img 
-              src="/logo.png" 
+              src={logoImage} 
               alt="Saipem Logo" 
               style={{ 
                 height: '36px', 

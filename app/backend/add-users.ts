@@ -1,18 +1,19 @@
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+// Import database configuration
+import { databaseConfig } from './src/config/database.config';
 
 async function addUsers() {
   try {
     console.log('🔧 Adding users to database...');
     
-    // Connect to the database
-    const connection = await mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: '1234',
-      database: 'fmrb_db',
-      port: 3306
-    });
+    // Connect to the database using the configuration from database.config.ts
+    const connection = await mysql.createConnection(databaseConfig);
 
     // Hash passwords
     const adminPasswordHash = await bcrypt.hash('Admin1234', 10);

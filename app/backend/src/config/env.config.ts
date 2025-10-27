@@ -1,7 +1,14 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import path from 'path';
 
-dotenv.config();
+// Load .env from the backend root directory
+// In production (IIS), the working directory is usually the application root
+// So we go up from dist/config to the backend root
+const envPath = path.resolve(__dirname, '../../.env');
+dotenv.config({ path: envPath });
+
+console.log('🔧 Loading .env from:', envPath);
 
 // Environment variable schema with validation
 const envSchema = z.object({
@@ -10,13 +17,8 @@ const envSchema = z.object({
   PORT: z.string().transform(Number).default('3000'),
   API_PREFIX: z.string().default('/api/v1'),
   
-  // Database
+  // Database Environment (determines which connection string to use)
   DB_ENVIRONMENT: z.enum(['local', 'production']).default('local'),
-  DB_HOST: z.string().optional(),
-  DB_PORT: z.string().transform(Number).optional(),
-  DB_NAME: z.string().optional(),
-  DB_USER: z.string().optional(),
-  DB_PASSWORD: z.string().optional(),
   
   // JWT
   JWT_ACCESS_SECRET: z.string().min(32),
@@ -25,7 +27,9 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   
   // CORS
-  CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  // Use '*' to allow all origins, or provide specific origins separated by commas
+  // Example: 'http://localhost:5173,https://example.com' or '*'
+  CORS_ORIGIN: z.string().default('*'),
 });
 
 // Validate environment variables

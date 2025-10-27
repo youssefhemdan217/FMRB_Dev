@@ -6,32 +6,20 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-// Database configurations
-const databaseConfigs = {
-  local: {
-    host: 'localhost',
-    user: 'root',
-    password: '1234',
-    port: 3306
-  },
-  production: {
-    host: 'SPMWSM02X3ZD.saipemnet.saipem.intranet',
-    user: 'user',
-    password: 'Fabsi@1234',
-    port: 3306
-  }
-};
+// Import database configuration
+import { databaseConfig } from './src/config/database.config';
 
 async function setupDatabase() {
   try {
     const dbEnvironment = process.env.DB_ENVIRONMENT || 'local';
-    const config = databaseConfigs[dbEnvironment as keyof typeof databaseConfigs];
     
     console.log(`🔧 Setting up database for ${dbEnvironment} environment...`);
-    console.log(`📍 Connecting to: ${config.host}:${config.port}`);
+    console.log(`📍 Connecting to: ${databaseConfig.host}:${databaseConfig.port}`);
     
     // First, connect without specifying a database to create it
-    const connection = await mysql.createConnection(config);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { database, ...configWithoutDb } = databaseConfig;
+    const connection = await mysql.createConnection(configWithoutDb);
 
     // Create the database
     await connection.execute('CREATE DATABASE IF NOT EXISTS fmrb_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
@@ -40,10 +28,7 @@ async function setupDatabase() {
     // Close connection and reconnect to the new database
     await connection.end();
 
-    const dbConnection = await mysql.createConnection({
-      ...config,
-      database: 'fmrb_db'
-    });
+    const dbConnection = await mysql.createConnection(databaseConfig);
 
     // Read and execute schema.sql
     const schemaPath = path.join(__dirname, 'database', 'schema.sql');

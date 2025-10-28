@@ -71,16 +71,16 @@ export const CalendarView = ({
         position: 'relative',
         '& .fc': {
           backgroundColor: 'white',
-          borderRadius: { xs: 3, md: 4 },
-          p: { xs: 1.5, sm: 2, md: 3 },
+          borderRadius: { xs: 2, md: 3 },
+          p: { xs: 0.5, sm: 1, md: 1.5 },
           boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
           border: '1px solid',
           borderColor: 'grey.200',
         },
         '& .fc-toolbar': {
-          marginBottom: { xs: 2, sm: 2.5, md: 3 },
+          marginBottom: { xs: 0.25, sm: 0.5, md: 1 },
           flexDirection: { xs: 'column', sm: 'row' },
-          gap: { xs: 1.5, sm: 0 },
+          gap: { xs: 0.25, sm: 0 },
         },
         '& .fc-toolbar-chunk': {
           display: 'flex',
@@ -89,17 +89,18 @@ export const CalendarView = ({
           gap: { xs: 0.5, sm: 0 },
         },
         '& .fc-toolbar-title': {
-          fontSize: { xs: '1.125rem', sm: '1.5rem', md: '1.75rem' },
+          fontSize: { xs: '0.9rem', sm: '1.125rem', md: '1.25rem' },
           fontWeight: 700,
           color: '#003D52',
+          lineHeight: 1.1,
         },
         '& .fc-button': {
           textTransform: 'none',
-          borderRadius: '10px',
+          borderRadius: '8px',
           fontWeight: 600,
           border: 'none',
-          padding: { xs: '6px 12px', sm: '8px 16px' },
-          fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+          padding: { xs: '4px 8px', sm: '6px 12px' },
+          fontSize: { xs: '0.75rem', sm: '0.8125rem' },
           transition: 'all 0.2s ease',
           '&:hover': {
             transform: 'translateY(-1px)',
@@ -121,10 +122,10 @@ export const CalendarView = ({
           boxShadow: '0 0 0 3px rgba(0, 61, 82, 0.2)',
         },
         '& .fc-col-header-cell': {
-          padding: { xs: '8px 0', sm: '12px 0' },
+          padding: { xs: '3px 0', sm: '4px 0' },
           fontWeight: 600,
           textTransform: 'uppercase',
-          fontSize: { xs: '0.65rem', sm: '0.75rem' },
+          fontSize: { xs: '0.6rem', sm: '0.7rem' },
           letterSpacing: '0.5px',
           color: 'text.secondary',
           backgroundColor: 'grey.50',
@@ -197,6 +198,7 @@ export const CalendarView = ({
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
         titleFormat={{ year: 'numeric', month: 'long' }}
+        dayHeaderFormat={{ weekday: 'short', day: 'numeric' }}
         events={events}
         editable={false}
         selectable={!disabled}
@@ -217,6 +219,15 @@ export const CalendarView = ({
             <Box sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
               {eventInfo.event.title}
             </Box>
+            {eventInfo.event.extendedProps.organizer && (
+              <Box sx={{ 
+                fontSize: { xs: '0.6rem', sm: '0.7rem' }, 
+                opacity: 0.9,
+                fontStyle: 'italic'
+              }}>
+                by {eventInfo.event.extendedProps.organizer}
+              </Box>
+            )}
           </Box>
         )}
       />

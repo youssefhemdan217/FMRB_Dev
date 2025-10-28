@@ -209,14 +209,14 @@ export const RoomDetailPage = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 1, sm: 1.5, md: 2 }, px: { xs: 1, sm: 2 } }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 0.5, sm: 0.5, md: 1 }, px: { xs: 1, sm: 2 } }}>
       {/* Room Header with Title and Back Button */}
       <Box 
         sx={{ 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between',
-          mb: { xs: 2, sm: 3 },
+          mb: { xs: 0.25, sm: 0.5 },
           flexWrap: 'wrap',
           gap: 1
         }}
@@ -234,15 +234,17 @@ export const RoomDetailPage = () => {
         </Button>
         
         <Typography 
-          variant="h4" 
+          variant="h5" 
           component="h1"
           sx={{ 
-            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+            fontSize: { xs: '1.125rem', sm: '1.25rem', md: '1.5rem' },
             fontWeight: 600,
             color: 'primary.main',
             textAlign: 'center',
-            flex: 1,
-            minWidth: 0
+            flex: '0 1 auto',
+            maxWidth: '300px',
+            minWidth: 0,
+            lineHeight: 1.1
           }}
         >
           {room.name}

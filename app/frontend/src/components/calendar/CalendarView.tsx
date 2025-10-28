@@ -134,10 +134,34 @@ export const CalendarView = ({
           height: { xs: '2.5em', sm: '3em' },
           borderColor: 'grey.100',
         },
+        '& .fc-timegrid-slot:nth-of-type(odd)': {
+          borderBottomColor: 'grey.400',
+          borderBottomWidth: '2px',
+          borderBottomStyle: 'solid',
+        },
+        '& .fc-timegrid-slot:nth-of-type(even)': {
+          borderBottomColor: 'grey.400',
+          borderBottomWidth: '1px', 
+          borderBottomStyle: 'solid',
+        },
         '& .fc-timegrid-slot-label': {
           fontWeight: 500,
           color: 'text.secondary',
           fontSize: { xs: '0.7rem', sm: '0.75rem' },
+        },
+        '& .fc-timegrid-axis': {
+          borderColor: 'grey.400',
+          borderWidth: '1px',
+        },
+        '& .fc-timegrid-slot-minor': {
+          borderTopColor: 'grey.400 !important',
+          borderTopStyle: 'solid !important',
+          borderTopWidth: '1px !important',
+        },
+        '& .fc-timegrid-slot-major': {
+          borderTopColor: 'grey.500 !important',
+          borderTopStyle: 'solid !important',
+          borderTopWidth: '2px !important',
         },
         '& .fc-event': {
           cursor: disabled ? 'default' : 'pointer',

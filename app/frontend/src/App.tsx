@@ -16,7 +16,7 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { BookingModal } from './components/modals/BookingModal';
 import { Toast } from './components/common/Toast';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AdminProtectedRoute } from './components/auth/AdminProtectedRoute';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { initializeAuth } from './store/slices/authSlice';
 import { ROUTES } from './constants/routes';
@@ -58,21 +58,40 @@ function AppContent() {
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
-        {/* App Routes (Protected) */}
+        {/* Public App Routes (No authentication required) */}
         <Route
           path={ROUTES.ROOT}
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
+          element={<AppLayout />}
         >
           <Route index element={<Navigate to={ROUTES.DEFAULT_ROOM} replace />} />
           <Route path={ROUTES.ROOMS} element={<RoomsPage />} />
           <Route path={ROUTES.ROOM_DETAIL()} element={<RoomDetailPage />} />
-          <Route path={ROUTES.ROOM_MANAGEMENT} element={<RoomManagementPage />} />
-          <Route path={ROUTES.ANALYTICS} element={<AnalyticsPage />} />
-          <Route path={ROUTES.APPROVALS} element={<ApprovalPage />} />
+          
+          {/* Protected Routes (Admin/Approval only) */}
+          <Route
+            path={ROUTES.ROOM_MANAGEMENT}
+            element={
+              <AdminProtectedRoute requiredRole="admin">
+                <RoomManagementPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.ANALYTICS}
+            element={
+              <AdminProtectedRoute requiredRole="admin">
+                <AnalyticsPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.APPROVALS}
+            element={
+              <AdminProtectedRoute requiredRole="admin_or_approval">
+                <ApprovalPage />
+              </AdminProtectedRoute>
+            }
+          />
           <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
         </Route>
       </Routes>

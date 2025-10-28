@@ -162,26 +162,62 @@ export const Navbar = () => {
           </ListItem>
         ))}
         
-        {/* Mobile Logout */}
-        {isAuthenticated && user && (
+        {/* Mobile Auth Section */}
+        <Divider sx={{ my: 1 }} />
+        {isAuthenticated && user ? (
+          /* Mobile Logout */
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                handleDrawerToggle();
+                handleLogout();
+              }}
+              sx={{
+                color: 'error.main',
+                '&:hover': {
+                  backgroundColor: 'error.light',
+                  color: 'white',
+                },
+              }}
+            >
+              <LogoutIcon sx={{ mr: 2 }} />
+              <ListItemText primary="Sign Out" />
+            </ListItemButton>
+          </ListItem>
+        ) : (
           <>
-            <Divider sx={{ my: 1 }} />
             <ListItem disablePadding>
               <ListItemButton
-                onClick={() => {
-                  handleDrawerToggle();
-                  handleLogout();
-                }}
+                component={Link}
+                to={ROUTES.LOGIN}
+                onClick={handleDrawerToggle}
                 sx={{
-                  color: 'error.main',
+                  color: 'primary.main',
                   '&:hover': {
-                    backgroundColor: 'error.light',
+                    backgroundColor: 'primary.light',
                     color: 'white',
                   },
                 }}
               >
-                <LogoutIcon sx={{ mr: 2 }} />
-                <ListItemText primary="Sign Out" />
+                <LoginIcon sx={{ mr: 2 }} />
+                <ListItemText primary="Login" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                component={Link}
+                to={ROUTES.REGISTER}
+                onClick={handleDrawerToggle}
+                sx={{
+                  color: 'secondary.main',
+                  '&:hover': {
+                    backgroundColor: 'secondary.light',
+                    color: 'white',
+                  },
+                }}
+              >
+                <PersonAddIcon sx={{ mr: 2 }} />
+                <ListItemText primary="Sign Up" />
               </ListItemButton>
             </ListItem>
           </>

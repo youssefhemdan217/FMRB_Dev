@@ -20,15 +20,22 @@ const apiClient: AxiosInstance = axios.create({
 
 /**
  * Request interceptor
- * - Adds authentication token to requests
+ * - Adds authentication token to protected requests only
  * - Logs requests in development
  */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Add auth token from localStorage if available
-    const token = localStorage.getItem(serverConfig.token.accessTokenKey);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Only add auth token for protected routes
+    const isProtectedRoute = config.url?.includes('/auth/') || 
+                             config.url?.includes('/bookings/') || 
+                             config.url?.includes('/analytics/') ||
+                             (config.method !== 'get' && config.url?.includes('/rooms/'));
+    
+    if (isProtectedRoute) {
+      const token = localStorage.getItem(serverConfig.token.accessTokenKey);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     // Log request in development
@@ -62,8 +69,14 @@ apiClient.interceptors.response.use(
 
     // Handle 401 Unauthorized - Invalid token or user not authenticated
     if (error.response?.status === 401 && originalRequest) {
-      // Only clear auth data and redirect if not on login/register page
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+      // Only clear auth data and redirect for protected routes
+      // Don't redirect for public endpoints like rooms
+      const isProtectedRoute = originalRequest.url?.includes('/auth/') || 
+                               originalRequest.url?.includes('/bookings/') || 
+                               originalRequest.url?.includes('/analytics/') ||
+                               (originalRequest.method !== 'GET' && originalRequest.url?.includes('/rooms/'));
+      
+      if (isProtectedRoute && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
         // Clear auth data
         localStorage.removeItem(serverConfig.token.accessTokenKey);
         localStorage.removeItem(serverConfig.token.refreshTokenKey);

@@ -12,7 +12,7 @@ const parseCorsOrigin = (origin: string): string | string[] => {
 
 export const serverConfig = {
   port: env.PORT, // Can be number or string (named pipe)
-  apiPrefix: env.API_PREFIX,
+  apiPrefix: env.IIS_APP_PATH + env.API_PREFIX, // Combine IIS app path with API prefix
   nodeEnv: env.NODE_ENV,
   corsOrigin: parseCorsOrigin(env.CORS_ORIGIN),
   isDevelopment: env.NODE_ENV === 'development',

@@ -55,6 +55,7 @@ const envSchema = z.object({
     return parsed;
   }),
   API_PREFIX: z.string().default('/api/v1'),
+  IIS_APP_PATH: z.string().default(''), // For IIS deployment in subdirectory
   
   // Database Environment (determines which connection string to use)
   DB_ENVIRONMENT: z.enum(['local', 'production']).default('local'),

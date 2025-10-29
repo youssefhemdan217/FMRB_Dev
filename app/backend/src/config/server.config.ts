@@ -11,13 +11,21 @@ const parseCorsOrigin = (origin: string): string | string[] => {
 };
 
 export const serverConfig = {
-  port: env.PORT,
+  port: env.PORT, // Can be number or string (named pipe)
   apiPrefix: env.API_PREFIX,
   nodeEnv: env.NODE_ENV,
   corsOrigin: parseCorsOrigin(env.CORS_ORIGIN),
   isDevelopment: env.NODE_ENV === 'development',
   isProduction: env.NODE_ENV === 'production',
 };
+
+// Debug logging
+console.log('🔧 Server Config:', {
+  port: serverConfig.port,
+  portType: typeof serverConfig.port,
+  nodeEnv: serverConfig.nodeEnv,
+  apiPrefix: serverConfig.apiPrefix,
+});
 
 export default serverConfig;
 

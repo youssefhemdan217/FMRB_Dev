@@ -1,0 +1,1 @@
+{"version":3,"file":"GetAllRooms.d.ts","sourceRoot":"","sources":["../../../../src/application/use-cases/rooms/GetAllRooms.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,4CAA4C,CAAC;AAC7E,OAAO,EAAE,IAAI,EAAE,MAAM,+BAA+B,CAAC;AAErD,qBAAa,kBAAkB;IACjB,OAAO,CAAC,cAAc;gBAAd,cAAc,EAAE,eAAe;IAE7C,OAAO,IAAI,OAAO,CAAC,IAAI,EAAE,CAAC;CAGjC"}

@@ -194,10 +194,33 @@ const startServer = async () => {
     const app = createApp(container);
 
     // Start Server
-    app.listen(serverConfig.port, () => {
+    const port = serverConfig.port;
+    
+    // Validate port (can be string for named pipes or number for regular ports)
+    if (!port) {
+      throw new Error(`Port is not defined. Received: ${port}`);
+    }
+    
+    // If it's a string (named pipe), don't validate as number
+    if (typeof port === 'string' && (port.includes('\\') || port.includes('pipe'))) {
+      console.log(`🔧 Starting server on named pipe: ${port}`);
+    } else if (typeof port === 'number') {
+      if (isNaN(port) || port <= 0 || port >= 65536) {
+        throw new Error(`Invalid port number: ${port}. Port must be a number between 1 and 65535.`);
+      }
+      console.log(`🔧 Starting server on port: ${port}`);
+    } else {
+      throw new Error(`Invalid port configuration: ${port} (type: ${typeof port})`);
+    }
+    
+    app.listen(port, () => {
       console.log('✅ Server is running!');
-      console.log(`🌐 URL: http://localhost:${serverConfig.port}`);
-      console.log(`📡 API: http://localhost:${serverConfig.port}${serverConfig.apiPrefix}`);
+      if (typeof port === 'string' && (port.includes('\\') || port.includes('pipe'))) {
+        console.log(`🔌 Named pipe: ${port}`);
+      } else {
+        console.log(`🌐 URL: http://localhost:${port}`);
+        console.log(`📡 API: http://localhost:${port}${serverConfig.apiPrefix}`);
+      }
       console.log(`💾 Database: ${process.env.DB_NAME} on ${process.env.DB_HOST}`);
       console.log('');
       console.log('Available endpoints:');

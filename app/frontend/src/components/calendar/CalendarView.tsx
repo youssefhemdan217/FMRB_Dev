@@ -135,14 +135,18 @@ export const CalendarView = ({
           borderColor: 'grey.100',
         },
         '& .fc-timegrid-slot-minor': {
-          borderTopColor: 'grey.300 !important',
+          borderTopColor: 'rgba(0, 0, 0, 0.08) !important',
           borderTopStyle: 'solid !important',
           borderTopWidth: '1px !important',
         },
         '& .fc-timegrid-slot-major': {
-          borderTopColor: 'grey.500 !important',
+          borderTopColor: 'rgba(0, 0, 0, 0.4) !important',
           borderTopStyle: 'solid !important',
           borderTopWidth: '2px !important',
+        },
+        '& .fc-timegrid-divider': {
+          borderColor: 'rgba(0, 0, 0, 0.35) !important',
+          borderWidth: '2px !important',
         },
         '& .fc-timegrid-slot-label': {
           fontWeight: 500,
@@ -150,8 +154,24 @@ export const CalendarView = ({
           fontSize: { xs: '0.7rem', sm: '0.75rem' },
         },
         '& .fc-timegrid-axis': {
-          borderColor: 'grey.400',
+          borderColor: 'rgba(0, 0, 0, 0.4)',
           borderWidth: '1px',
+        },
+        '& .fc-timegrid-slot-lane': {
+          borderColor: 'rgba(0, 0, 0, 0.08) !important',
+        },
+        '& .fc-timegrid': {
+          '& .fc-scrollgrid-sync-table': {
+            '& .fc-timegrid-slot': {
+              borderBottomColor: 'rgba(0, 0, 0, 0.08) !important',
+              borderBottomWidth: '1px !important',
+              borderBottomStyle: 'solid !important',
+            },
+            '& .fc-timegrid-slot:nth-of-type(2n)': {
+              borderBottomColor: 'rgba(0, 0, 0, 0.4) !important',
+              borderBottomWidth: '2px !important',
+            },
+          },
         },
         '& .fc-event': {
           cursor: disabled ? 'default' : 'pointer',

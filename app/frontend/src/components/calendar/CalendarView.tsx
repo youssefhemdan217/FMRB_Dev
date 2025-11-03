@@ -70,16 +70,19 @@ export const CalendarView = ({
       sx={{
         position: 'relative',
         width: '100%',
-        height: { xs: '70vh', sm: '80vh', md: '85vh', lg: '95vh', xl: '100vh' },
-        minHeight: { xs: '500px', sm: '600px', md: '700px', lg: '800px', xl: '900px' },
-        maxHeight: 'none', // Remove max height restriction to allow growth on larger screens
+        height: { xs: '70vh', sm: '75vh', md: '80vh', lg: '85vh', xl: '90vh' },
+        minHeight: { xs: '500px', sm: '600px', md: '700px', lg: '800px', xl: '1000px' },
+        maxHeight: 'none',
+        transform: { xs: 'scale(1)', sm: 'scale(1.05)', md: 'scale(1.1)', lg: 'scale(1.15)', xl: 'scale(1.2)' },
+        transformOrigin: 'top left',
         '& .fc': {
-          // backgroundColor: 'white',
-          // borderRadius: { xs: 2, md: 3 },
-          // p: { xs: 0.5, sm: 1, md: 1.5 },
-          // boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+          backgroundColor: 'white',
+          borderRadius: { xs: 2, md: 3 },
+          p: { xs: 0.5, sm: 1, md: 1.5 },
+          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
           border: 'none',
           height: '100%',
+          fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.1rem', xl: '1.2rem' },
           '& .fc-view-harness': {
             height: '100% !important',
           },
@@ -99,7 +102,7 @@ export const CalendarView = ({
           gap: { xs: 0.5, sm: 0 },
         },
         '& .fc-toolbar-title': {
-          fontSize: { xs: '0.9rem', sm: '1.125rem', md: '1.25rem' },
+          fontSize: { xs: '1rem', sm: '1.2rem', md: '1.4rem', lg: '1.6rem', xl: '1.8rem' },
           fontWeight: 700,
           color: '#003D52',
           lineHeight: 1.1,
@@ -109,8 +112,8 @@ export const CalendarView = ({
           borderRadius: '8px',
           fontWeight: 600,
           border: 'none',
-          padding: { xs: '4px 8px', sm: '6px 12px' },
-          fontSize: { xs: '0.75rem', sm: '0.8125rem' },
+          padding: { xs: '6px 10px', sm: '8px 14px', md: '10px 16px', lg: '12px 18px' },
+          fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.1rem', xl: '1.2rem' },
           transition: 'all 0.2s ease',
           '&:hover': {
             transform: 'translateY(-1px)',
@@ -147,7 +150,7 @@ export const CalendarView = ({
           backgroundColor: 'grey.50',
         },
         '& .fc-timegrid-slot': {
-          height: { xs: '2.5em', sm: '3em' },
+          height: { xs: '2.5em', sm: '3em', md: '3.5em', lg: '4em', xl: '4.5em' },
         },
         '& .fc-timegrid-slot-minor': {
           borderTopColor: 'rgba(0, 0, 0, 0.08) !important',

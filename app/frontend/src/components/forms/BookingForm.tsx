@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Booking, BookingValidationErrors } from '../../types/booking.types';
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { TimeSelector } from './TimeSelector';
 
 export interface BookingFormProps {
   booking?: Booking | null;
@@ -49,11 +49,11 @@ export const BookingForm = ({
     if (booking) {
       setTitle(booking.title);
       setOrganizer(booking.organizer || '');
-      setStart(format(new Date(booking.start), "yyyy-MM-dd'T'HH:mm"));
-      setEnd(format(new Date(booking.end), "yyyy-MM-dd'T'HH:mm"));
+      setStart(booking.start);
+      setEnd(booking.end);
     } else if (defaultStart && defaultEnd) {
-      setStart(format(defaultStart, "yyyy-MM-dd'T'HH:mm"));
-      setEnd(format(defaultEnd, "yyyy-MM-dd'T'HH:mm"));
+      setStart(defaultStart.toISOString());
+      setEnd(defaultEnd.toISOString());
       // Load last organizer from localStorage
       const lastOrganizer = localStorage.getItem('lastOrganizer');
       if (lastOrganizer) {
@@ -73,8 +73,8 @@ export const BookingForm = ({
     onSubmit({
       title: title.trim(),
       organizer: organizer.trim() || undefined,
-      start: new Date(start).toISOString(),
-      end: new Date(end).toISOString(),
+      start: start,
+      end: end,
     });
   };
 
@@ -156,56 +156,30 @@ export const BookingForm = ({
 
         <Box sx={{ 
           display: 'grid', 
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+          gridTemplateColumns: '1fr',
           gap: 2,
           mb: 2,
         }}>
-          <TextField
-            margin="dense"
-            label="Start Time"
-            type="datetime-local"
-            fullWidth
-            required
+          <TimeSelector
+            label="Start"
             value={start}
-            onChange={(e) => setStart(e.target.value)}
+            onChange={setStart}
             error={!!errors.start}
             helperText={errors.start}
             disabled={disabled || loading}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '&:hover fieldset': {
-                  borderColor: 'primary.main',
-                  borderWidth: 2,
-                },
-              },
-            }}
+            required
+            maxTime={end || undefined}
           />
 
-          <TextField
-            margin="dense"
-            label="End Time"
-            type="datetime-local"
-            fullWidth
-            required
+          <TimeSelector
+            label="End"
             value={end}
-            onChange={(e) => setEnd(e.target.value)}
+            onChange={setEnd}
             error={!!errors.end}
             helperText={errors.end}
             disabled={disabled || loading}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '&:hover fieldset': {
-                  borderColor: 'primary.main',
-                  borderWidth: 2,
-                },
-              },
-            }}
+            required
+            minTime={start || undefined}
           />
         </Box>
 

@@ -69,13 +69,23 @@ export const CalendarView = ({
     <Box
       sx={{
         position: 'relative',
+        width: '100%',
+        height: { xs: '70vh', sm: '80vh', md: '85vh', lg: '95vh', xl: '100vh' },
+        minHeight: { xs: '500px', sm: '600px', md: '700px', lg: '800px', xl: '900px' },
+        maxHeight: 'none', // Remove max height restriction to allow growth on larger screens
         '& .fc': {
-          backgroundColor: 'white',
-          borderRadius: { xs: 2, md: 3 },
-          p: { xs: 0.5, sm: 1, md: 1.5 },
-          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-          border: '1px solid',
-          borderColor: 'grey.200',
+          // backgroundColor: 'white',
+          // borderRadius: { xs: 2, md: 3 },
+          // p: { xs: 0.5, sm: 1, md: 1.5 },
+          // boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+          border: 'none',
+          height: '100%',
+          '& .fc-view-harness': {
+            height: '100% !important',
+          },
+          '& .fc-scroller': {
+            overflow: 'auto !important',
+          },
         },
         '& .fc-toolbar': {
           marginBottom: { xs: 0.25, sm: 0.5, md: 1 },
@@ -118,8 +128,14 @@ export const CalendarView = ({
           },
         },
         '& .fc-button-active': {
-          backgroundColor: '#002A39 !important',
-          boxShadow: '0 0 0 3px rgba(0, 61, 82, 0.2)',
+          backgroundColor: '#FF6600 !important',
+          borderColor: '#FF6600 !important',
+          color: 'white !important',
+          boxShadow: '0 0 0 3px rgba(255, 102, 0, 0.2)',
+          '&:hover': {
+            backgroundColor: '#E55A00 !important',
+            borderColor: '#E55A00 !important',
+          },
         },
         '& .fc-col-header-cell': {
           padding: { xs: '3px 0', sm: '4px 0' },
@@ -132,7 +148,6 @@ export const CalendarView = ({
         },
         '& .fc-timegrid-slot': {
           height: { xs: '2.5em', sm: '3em' },
-          borderColor: 'grey.100',
         },
         '& .fc-timegrid-slot-minor': {
           borderTopColor: 'rgba(0, 0, 0, 0.08) !important',
@@ -145,8 +160,7 @@ export const CalendarView = ({
           borderTopWidth: '2px !important',
         },
         '& .fc-timegrid-divider': {
-          borderColor: 'rgba(0, 0, 0, 0.35) !important',
-          borderWidth: '2px !important',
+          display: 'none !important',
         },
         '& .fc-timegrid-slot-label': {
           fontWeight: 500,
@@ -156,22 +170,6 @@ export const CalendarView = ({
         '& .fc-timegrid-axis': {
           borderColor: 'rgba(0, 0, 0, 0.4)',
           borderWidth: '1px',
-        },
-        '& .fc-timegrid-slot-lane': {
-          borderColor: 'rgba(0, 0, 0, 0.08) !important',
-        },
-        '& .fc-timegrid': {
-          '& .fc-scrollgrid-sync-table': {
-            '& .fc-timegrid-slot': {
-              borderBottomColor: 'rgba(0, 0, 0, 0.08) !important',
-              borderBottomWidth: '1px !important',
-              borderBottomStyle: 'solid !important',
-            },
-            '& .fc-timegrid-slot:nth-of-type(2n)': {
-              borderBottomColor: 'rgba(0, 0, 0, 0.4) !important',
-              borderBottomWidth: '2px !important',
-            },
-          },
         },
         '& .fc-event': {
           cursor: disabled ? 'default' : 'pointer',
@@ -244,6 +242,10 @@ export const CalendarView = ({
         slotMaxTime={workHours.end}
         allDaySlot={false}
         height="auto"
+        contentHeight="auto"
+        aspectRatio={1.35}
+        handleWindowResize={true}
+        windowResizeDelay={100}
         select={handleDateSelect}
         eventClick={handleEventClick}
         slotDuration="00:30:00"

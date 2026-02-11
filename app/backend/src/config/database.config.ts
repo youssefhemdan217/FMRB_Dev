@@ -2,24 +2,25 @@ import mysql from 'mysql2/promise';
 import { env } from './env.config';
 
 // Database configurations for different environments
+// Local config reads from .env so each developer can use their own credentials
 const databaseConfigs = {
   local: {
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: '1234',
-    database: 'fmrb_db',
+    host: env.DB_HOST || 'localhost',
+    port: env.DB_PORT || 3306,
+    user: env.DB_USER || 'root',
+    password: env.DB_PASSWORD || '',
+    database: env.DB_NAME || 'fmrb_db',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
     jsonStrings: false,
   },
   production: {
-    host: 'SPMWSM02X3ZD.saipemnet.saipem.intranet',
-    port: 3306,
-    user: 'user',
-    password: 'Fabsi@1234',
-    database: 'fmrb_db',
+    host: env.DB_HOST || 'SPMWSM02X3ZD.saipemnet.saipem.intranet',
+    port: env.DB_PORT || 3306,
+    user: env.DB_USER || 'user',
+    password: env.DB_PASSWORD || '',
+    database: env.DB_NAME || 'fmrb_db',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

@@ -2,8 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { useEffect } from 'react';
-import { store, useAppDispatch } from './store';
+import { store } from './store';
 import { theme } from './theme';
 import { AppLayout } from './components/layout/AppLayout';
 import { RoomsPage } from './pages/RoomsPage';
@@ -18,19 +17,7 @@ import { BookingModal } from './components/modals/BookingModal';
 import { Toast } from './components/common/Toast';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { initializeAuth } from './store/slices/authSlice';
 import { ROUTES } from './constants/routes';
-
-// Component to initialize auth state
-function AuthInitializer() {
-  const dispatch = useAppDispatch();
-  
-  useEffect(() => {
-    dispatch(initializeAuth());
-  }, [dispatch]);
-  
-  return null;
-}
 
 // Component inside Router context that handles data loading
 function DataLoader() {
@@ -41,15 +28,12 @@ function DataLoader() {
 function AppContent() {
   return (
     <BrowserRouter
-      basename="/MeetingBookingApp"
+      basename="/"
       future={{
         v7_startTransition: true,
         v7_relativeSplatPath: true,
       }}
     >
-      {/* Initialize auth state */}
-      <AuthInitializer />
-      
       {/* Data loader inside Router context */}
       <DataLoader />
       
@@ -67,7 +51,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to={ROUTES.DEFAULT_ROOM} replace />} />
+          <Route index element={<Navigate to={ROUTES.ROOMS} replace />} />
           <Route path={ROUTES.ROOMS} element={<RoomsPage />} />
           <Route path={ROUTES.ROOM_DETAIL()} element={<RoomDetailPage />} />
           <Route path={ROUTES.ROOM_MANAGEMENT} element={<RoomManagementPage />} />

@@ -3,7 +3,7 @@
  * Enhanced user authentication page matching app theme
  */
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
@@ -37,7 +37,7 @@ export const LoginPage = () => {
   const { isLoading, error, isAuthenticated } = useAppSelector((state) => state.auth);
 
   // Get the page user was trying to access before being redirected to login
-  const from = (location.state as any)?.from?.pathname || '/rooms/9';
+  const from = (location.state as any)?.from?.pathname || '/rooms';
 
   const [formData, setFormData] = useState({
     email: '',
@@ -49,10 +49,12 @@ export const LoginPage = () => {
     password: '',
   });
 
-  // Redirect if already authenticated
-  if (isAuthenticated) {
-    navigate(from, { replace: true });
-  }
+  // Redirect if already authenticated (in useEffect to avoid calling navigate during render)
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const validateForm = (): boolean => {
     const errors = {
@@ -378,7 +380,7 @@ export const LoginPage = () => {
                   fontSize: { xs: '0.75rem', sm: '0.875rem' },
                 }}
               >
-                Youssef@admin.com
+                Khaled@admin.com
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

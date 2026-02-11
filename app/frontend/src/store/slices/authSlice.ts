@@ -11,16 +11,39 @@ import { handleError } from '../../utils/errorHandler';
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   isLoading: boolean;
   error: string | null;
 }
 
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
+// Synchronously hydrate auth state from localStorage on store creation
+// This runs BEFORE the first render, avoiding the race condition
+const hydrateAuth = (): AuthState => {
+  const isAuth = authApi.isAuthenticated();
+  const user = authApi.getCurrentUser();
+
+  if (isAuth && user) {
+    return {
+      user,
+      isAuthenticated: true,
+      isInitialized: true,
+      isLoading: false,
+      error: null,
+    };
+  }
+
+  // No valid session — clear any stale data
+  authApi.clearAuth();
+  return {
+    user: null,
+    isAuthenticated: false,
+    isInitialized: true,
+    isLoading: false,
+    error: null,
+  };
 };
+
+const initialState: AuthState = hydrateAuth();
 
 /**
  * Async thunk for user registration
@@ -78,6 +101,7 @@ const authSlice = createSlice({
       // Local logout without API call (fallback)
       state.user = null;
       state.isAuthenticated = false;
+      state.isInitialized = true;
       state.error = null;
     },
     clearError: (state) => {
@@ -101,6 +125,7 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       }
+      state.isInitialized = true;
       state.error = null;
     },
   },

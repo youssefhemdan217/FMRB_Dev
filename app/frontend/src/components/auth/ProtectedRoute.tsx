@@ -5,6 +5,7 @@
 
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { CircularProgress, Box } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { showToast } from '../../store/slices/uiSlice';
 
@@ -13,18 +14,27 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
   const location = useLocation();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isInitialized && !isAuthenticated) {
       dispatch(showToast({
         message: 'Please login to access this page',
         type: 'warning',
       }));
     }
-  }, [isAuthenticated, dispatch]);
+  }, [isAuthenticated, isInitialized, dispatch]);
+
+  // Wait for auth state to be hydrated before making any redirect decision
+  if (!isInitialized) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (!isAuthenticated) {
     // Redirect to login page with return URL

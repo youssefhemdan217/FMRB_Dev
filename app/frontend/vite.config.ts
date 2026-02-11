@@ -2,10 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-const BASEURL = 'http://spmwsm02x3zd.saipemnet.saipem.intranet/MeetingBookingApi';
-// const BASEURL = '';
-const frontRoute = 'MeetingBookingApp';
-// const frontRoute = '';
+const BASEURL = 'http://localhost:3000';
+const frontRoute = '';
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   // Use FabsiWebPage path for consistent deployment

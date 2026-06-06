@@ -52,6 +52,9 @@ import {
   useRtl
 } from "./chunk-3SXKOA6I.js";
 import {
+  require_react_dom
+} from "./chunk-PJE32QHQ.js";
+import {
   SvgIcon_default,
   createChainedFunction_default,
   createSvgIcon,
@@ -225,9 +228,6 @@ import {
 import {
   require_jsx_runtime
 } from "./chunk-BTMAOXEQ.js";
-import {
-  require_react_dom
-} from "./chunk-PJE32QHQ.js";
 import {
   require_react
 } from "./chunk-N6BKJ3US.js";

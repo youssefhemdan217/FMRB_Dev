@@ -6,19 +6,19 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-// Database configurations
+// Database configurations (local reads from .env; production uses env vars or fallbacks)
 const databaseConfigs = {
   local: {
-    host: 'localhost',
-    user: 'root',
-    password: '1234',
-    port: 3306
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    port: Number(process.env.DB_PORT) || 3306
   },
   production: {
-    host: 'SPMWSM02X3ZD.saipemnet.saipem.intranet',
-    user: 'user',
-    password: 'Fabsi@1234',
-    port: 3306
+    host: process.env.DB_HOST || 'SPMWSM02X3ZD.saipemnet.saipem.intranet',
+    user: process.env.DB_USER || 'user',
+    password: process.env.DB_PASSWORD || '',
+    port: Number(process.env.DB_PORT) || 3306
   }
 };
 

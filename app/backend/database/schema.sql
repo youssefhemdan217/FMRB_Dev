@@ -97,6 +97,9 @@ CREATE TABLE IF NOT EXISTS mb_bookings (
   start DATETIME NOT NULL,
   end DATETIME NOT NULL,
   
+  -- Booking approval workflow
+  status ENUM('pending', 'approved', 'declined') NOT NULL DEFAULT 'pending',
+  
   -- When was this booking created
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
@@ -109,6 +112,7 @@ CREATE TABLE IF NOT EXISTS mb_bookings (
   INDEX idx_user_id (user_id),
   INDEX idx_start (start),
   INDEX idx_end (end),
+  INDEX idx_status (status),
   
   -- Composite index for overlapping booking checks
   INDEX idx_room_time (room_id, start, end)
